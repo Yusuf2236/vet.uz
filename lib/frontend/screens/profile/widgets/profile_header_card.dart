@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_images.dart';
@@ -33,22 +35,49 @@ class ProfileHeaderCard extends StatelessWidget {
             child: SizedBox(
               width: 64,
               height: 64,
-              child: RemoteImage(
-                url: AppImages.avatar(user.fullName),
-                fallbackBuilder: (context) => Container(
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      colors: [AppColors.primaryLight, AppColors.primary],
+              child: (user.avatarUrl != null && user.avatarUrl!.isNotEmpty)
+                  ? (user.avatarUrl!.startsWith('http')
+                      ? Image.network(
+                          user.avatarUrl!,
+                          width: 64,
+                          height: 64,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.file(
+                          File(user.avatarUrl!),
+                          width: 64,
+                          height: 64,
+                          fit: BoxFit.cover,
+                          errorBuilder: (c, e, s) => Container(
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: LinearGradient(
+                                colors: [AppColors.primaryLight, AppColors.primary],
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              TextUtils.initials(user.fullName),
+                              style: AppTextStyles.h1.copyWith(color: Colors.white),
+                            ),
+                          ),
+                        ))
+                  : RemoteImage(
+                      url: AppImages.avatar(user.fullName),
+                      fallbackBuilder: (context) => Container(
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            colors: [AppColors.primaryLight, AppColors.primary],
+                          ),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          TextUtils.initials(user.fullName),
+                          style: AppTextStyles.h1.copyWith(color: Colors.white),
+                        ),
+                      ),
                     ),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    TextUtils.initials(user.fullName),
-                    style: AppTextStyles.h1.copyWith(color: Colors.white),
-                  ),
-                ),
-              ),
             ),
           ),
           const SizedBox(width: AppSpacing.md),

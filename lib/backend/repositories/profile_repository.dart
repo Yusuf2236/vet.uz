@@ -33,6 +33,7 @@ class ProfileRepository {
       fullName: p.profileName,
       role: p.profileRole,
       city: p.profileCity,
+      avatarUrl: p.profileAvatar,
       isPro: p.isPro,
     );
   }
@@ -58,6 +59,7 @@ class ProfileRepository {
       name: profile.fullName,
       role: profile.role,
       city: profile.city,
+      avatar: profile.avatarUrl,
     );
     await PreferencesService.instance.setIsPro(profile.isPro);
   }

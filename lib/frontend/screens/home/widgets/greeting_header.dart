@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../../../../backend/repositories/auth_repository.dart';
@@ -60,10 +62,30 @@ class GreetingHeader extends StatelessWidget {
             ),
             alignment: Alignment.center,
             child: isLoggedIn
-                ? Text(
-                    TextUtils.initials(user.fullName),
-                    style: AppTextStyles.bodyStrong.copyWith(color: Colors.white),
-                  )
+                ? (user.avatarUrl != null && user.avatarUrl!.isNotEmpty
+                    ? ClipOval(
+                        child: user.avatarUrl!.startsWith('http')
+                            ? Image.network(
+                                user.avatarUrl!,
+                                width: 46,
+                                height: 46,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.file(
+                                File(user.avatarUrl!),
+                                width: 46,
+                                height: 46,
+                                fit: BoxFit.cover,
+                                errorBuilder: (c, e, s) => Text(
+                                  TextUtils.initials(user.fullName),
+                                  style: AppTextStyles.bodyStrong.copyWith(color: Colors.white),
+                                ),
+                              ),
+                      )
+                    : Text(
+                        TextUtils.initials(user.fullName),
+                        style: AppTextStyles.bodyStrong.copyWith(color: Colors.white),
+                      ))
                 : const Icon(
                     Icons.person_outline,
                     color: Colors.white,

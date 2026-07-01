@@ -22,6 +22,7 @@ class PreferencesService {
   static const String _kProfileName = 'profile_name';
   static const String _kProfileRole = 'profile_role';
   static const String _kProfileCity = 'profile_city';
+  static const String _kProfileAvatar = 'profile_avatar';
   static const String _kIsPro = 'is_pro';
 
   // ---- Tema ----
@@ -68,14 +69,27 @@ class PreferencesService {
   String? get profileName => _prefs.getString(_kProfileName);
   String? get profileRole => _prefs.getString(_kProfileRole);
   String? get profileCity => _prefs.getString(_kProfileCity);
+  String? get profileAvatar => _prefs.getString(_kProfileAvatar);
+
+  Future<void> setProfileAvatar(String? path) async {
+    if (path == null) {
+      await _prefs.remove(_kProfileAvatar);
+    } else {
+      await _prefs.setString(_kProfileAvatar, path);
+    }
+  }
 
   Future<void> setProfile({
     required String name,
     required String role,
     required String city,
+    String? avatar,
   }) async {
     await _prefs.setString(_kProfileName, name);
     await _prefs.setString(_kProfileRole, role);
     await _prefs.setString(_kProfileCity, city);
+    if (avatar != null) {
+      await _prefs.setString(_kProfileAvatar, avatar);
+    }
   }
 }
