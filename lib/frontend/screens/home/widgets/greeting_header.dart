@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../backend/repositories/auth_repository.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -16,6 +17,7 @@ class GreetingHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLoggedIn = AuthRepository().isLoggedIn;
     final titleColor = Theme.of(context).textTheme.titleLarge?.color;
     final secondary = Theme.of(context).textTheme.bodySmall?.color;
 
@@ -23,19 +25,22 @@ class GreetingHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                AppStrings.greeting,
-                style: AppTextStyles.body.copyWith(color: secondary),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                '${user.fullName} 👋',
-                style: AppTextStyles.h2.copyWith(color: titleColor),
-              ),
-            ],
+          child: Pressable(
+            onTap: onAvatarTap,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isLoggedIn ? AppStrings.greeting : "Xush kelibsiz,",
+                  style: AppTextStyles.body.copyWith(color: secondary),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  isLoggedIn ? '${user.fullName} 👋' : 'Tizimga kiring 👋',
+                  style: AppTextStyles.h2.copyWith(color: titleColor),
+                ),
+              ],
+            ),
           ),
         ),
         Pressable(
@@ -54,10 +59,16 @@ class GreetingHeader extends StatelessWidget {
               ),
             ),
             alignment: Alignment.center,
-            child: Text(
-              TextUtils.initials(user.fullName),
-              style: AppTextStyles.bodyStrong.copyWith(color: Colors.white),
-            ),
+            child: isLoggedIn
+                ? Text(
+                    TextUtils.initials(user.fullName),
+                    style: AppTextStyles.bodyStrong.copyWith(color: Colors.white),
+                  )
+                : const Icon(
+                    Icons.person_outline,
+                    color: Colors.white,
+                    size: 24,
+                  ),
           ),
         ),
       ],

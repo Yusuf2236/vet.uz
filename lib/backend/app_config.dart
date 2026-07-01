@@ -1,3 +1,5 @@
+import 'dart:io';
+
 /// Backend (Supabase) sozlamalari.
 ///
 /// Supabase loyihangizni yaratgach (https://supabase.com → New project),
@@ -25,25 +27,28 @@ class AppConfig {
     defaultValue: 'sb_publishable_wUsGBMgbWXx5uKwyX83rTQ_jIpGeskS',
   );
 
-  /// Backend ishlatilsinmi? STANDART — O'CHIQ (localhost'da `MockData` +
-  /// real-time simulyatsiya bilan ishlaydi, internet/Supabase shart emas).
-  /// Supabase'ga ulanmoqchi bo'lsangiz:
-  ///   flutter run --dart-define=USE_BACKEND=true
+  /// Backend ishlatilsinmi? STANDART — YOQIQ (Supabase'ga ulanadi).
   static const bool _backendFlag = bool.fromEnvironment(
     'USE_BACKEND',
-    defaultValue: false,
+    defaultValue: true,
   );
 
+  static bool get isTest {
+    try {
+      return Platform.environment.containsKey('FLUTTER_TEST');
+    } catch (_) {
+      return false;
+    }
+  }
+
   static bool get useBackend =>
-      _backendFlag && supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
+      !isTest && _backendFlag && supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
 
   /// Haqiqiy Supabase Auth (telefon+parol) ishlatilsinmi.
-  /// Avval Supabase'da Phone (yoki Email) provayderini yoqing, so'ng:
-  ///   flutter run --dart-define=USE_BACKEND_AUTH=true
-  /// Aks holda login lokal demo rejimida ishlaydi (sessiya saqlanadi).
+  /// Avval Supabase'da Phone (yoki Email) provayderini yoqing.
   static const bool _backendAuthFlag = bool.fromEnvironment(
     'USE_BACKEND_AUTH',
-    defaultValue: false,
+    defaultValue: true,
   );
 
   static bool get useBackendAuth => useBackend && _backendAuthFlag;

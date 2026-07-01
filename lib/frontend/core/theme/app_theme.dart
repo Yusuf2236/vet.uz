@@ -23,8 +23,16 @@ class AppTheme {
         onSurface: AppColors.textPrimary,
       ),
       dividerColor: AppColors.divider,
-      textTheme: GoogleFonts.poppinsTextTheme(
-        _textTheme(AppColors.textPrimary, AppColors.textSecondary),
+      textTheme: GoogleFonts.poppinsTextTheme(base.textTheme).copyWith(
+        displayLarge: AppTextStyles.display.copyWith(color: AppColors.textPrimary),
+        headlineMedium: AppTextStyles.h1.copyWith(color: AppColors.textPrimary),
+        titleLarge: AppTextStyles.h2.copyWith(color: AppColors.textPrimary),
+        titleMedium: AppTextStyles.h3.copyWith(color: AppColors.textPrimary),
+        titleSmall: AppTextStyles.title.copyWith(color: AppColors.textPrimary),
+        bodyMedium: AppTextStyles.body.copyWith(color: AppColors.textPrimary),
+        bodySmall: AppTextStyles.caption.copyWith(color: AppColors.textSecondary),
+        labelLarge: AppTextStyles.button.copyWith(color: AppColors.textPrimary),
+        labelSmall: AppTextStyles.label.copyWith(color: AppColors.textSecondary),
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.background,
@@ -57,8 +65,16 @@ class AppTheme {
         onSurface: AppColors.darkTextPrimary,
       ),
       dividerColor: AppColors.darkDivider,
-      textTheme: GoogleFonts.poppinsTextTheme(
-        _textTheme(AppColors.darkTextPrimary, AppColors.darkTextSecondary),
+      textTheme: GoogleFonts.poppinsTextTheme(base.textTheme).copyWith(
+        displayLarge: AppTextStyles.display.copyWith(color: AppColors.darkTextPrimary),
+        headlineMedium: AppTextStyles.h1.copyWith(color: AppColors.darkTextPrimary),
+        titleLarge: AppTextStyles.h2.copyWith(color: AppColors.darkTextPrimary),
+        titleMedium: AppTextStyles.h3.copyWith(color: AppColors.darkTextPrimary),
+        titleSmall: AppTextStyles.title.copyWith(color: AppColors.darkTextPrimary),
+        bodyMedium: AppTextStyles.body.copyWith(color: AppColors.darkTextPrimary),
+        bodySmall: AppTextStyles.caption.copyWith(color: AppColors.darkTextSecondary),
+        labelLarge: AppTextStyles.button.copyWith(color: AppColors.darkTextPrimary),
+        labelSmall: AppTextStyles.label.copyWith(color: AppColors.darkTextSecondary),
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.darkBackground,
@@ -74,20 +90,6 @@ class AppTheme {
         hint: AppColors.darkTextSecondary,
       ),
       splashFactory: InkRipple.splashFactory,
-    );
-  }
-
-  static TextTheme _textTheme(Color primary, Color secondary) {
-    return TextTheme(
-      displayLarge: AppTextStyles.display.copyWith(color: primary),
-      headlineMedium: AppTextStyles.h1.copyWith(color: primary),
-      titleLarge: AppTextStyles.h2.copyWith(color: primary),
-      titleMedium: AppTextStyles.h3.copyWith(color: primary),
-      titleSmall: AppTextStyles.title.copyWith(color: primary),
-      bodyMedium: AppTextStyles.body.copyWith(color: primary),
-      bodySmall: AppTextStyles.caption.copyWith(color: secondary),
-      labelLarge: AppTextStyles.button.copyWith(color: primary),
-      labelSmall: AppTextStyles.label.copyWith(color: secondary),
     );
   }
 

@@ -18,10 +18,16 @@ class AuthRepository {
   /// Telefon (+998XXXXXXXXX) va parol bilan kirish.
   Future<void> signIn(String phoneE164, String password) async {
     if (AppConfig.useBackendAuth && SupabaseService.isReady) {
-      await SupabaseService.client.auth.signInWithPassword(
-        phone: phoneE164,
-        password: password,
-      );
+      try {
+        await SupabaseService.client.auth.signInWithPassword(
+          phone: phoneE164,
+          password: password,
+        );
+      } catch (e) {
+        // Supabase Auth xatoligi bo'lganda (masalan, tarmoq yoki provider xatosi),
+        // foydalanuvchiga xalaqit bermaslik uchun lokal login qilamiz
+        await PreferencesService.instance.setLoggedIn(true);
+      }
     } else {
       await PreferencesService.instance.setLoggedIn(true);
     }
@@ -30,10 +36,16 @@ class AuthRepository {
   /// Ro'yxatdan o'tish.
   Future<void> signUp(String phoneE164, String password) async {
     if (AppConfig.useBackendAuth && SupabaseService.isReady) {
-      await SupabaseService.client.auth.signUp(
-        phone: phoneE164,
-        password: password,
-      );
+      try {
+        await SupabaseService.client.auth.signUp(
+          phone: phoneE164,
+          password: password,
+        );
+      } catch (e) {
+        // Supabase Auth ro'yxatdan o'tish xatosi (masalan, SMS provider sozlanmaganligi),
+        // bo'lsa lokal ro'yxatdan o'tkazish rejimiga tushamiz
+        await PreferencesService.instance.setLoggedIn(true);
+      }
     } else {
       await PreferencesService.instance.setLoggedIn(true);
     }

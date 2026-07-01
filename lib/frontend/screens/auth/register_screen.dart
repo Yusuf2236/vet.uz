@@ -8,6 +8,8 @@ import '../../core/theme/app_text_styles.dart';
 import '../../core/utils/phone_input_formatter.dart';
 import '../../core/utils/validators.dart';
 import '../../../backend/repositories/auth_repository.dart';
+import '../../../backend/repositories/profile_repository.dart';
+import '../../models/user_profile.dart';
 import '../../widgets/primary_button.dart';
 import 'widgets/labeled_field.dart';
 
@@ -49,6 +51,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
     try {
       final digits = UzPhoneInputFormatter.digitsOf(_phone.text);
       await AuthRepository().signUp('+998$digits', _password.text.trim());
+      await ProfileRepository().updateProfile(
+        UserProfile(
+          fullName: _name.text.trim(),
+          role: 'Foydalanuvchi',
+          city: 'Toshkent',
+          animals: 0,
+          orders: 0,
+          rating: 5.0,
+        ),
+      );
     } catch (_) {
       if (!mounted) return;
       setState(() => _isLoading = false);

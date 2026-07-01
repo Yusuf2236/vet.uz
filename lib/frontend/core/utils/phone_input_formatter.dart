@@ -20,16 +20,34 @@ class UzPhoneInputFormatter extends TextInputFormatter {
         ? digits.substring(0, maxDigits)
         : digits;
 
+    final baseOffset = newValue.selection.baseOffset;
+    final textBeforeCursor = baseOffset >= 0 && baseOffset <= newValue.text.length
+        ? newValue.text.substring(0, baseOffset)
+        : '';
+    final digitsBeforeCursor = textBeforeCursor.replaceAll(RegExp(r'\D'), '').length;
+
+    int cursorOffset = 0;
+    int digitsWritten = 0;
+
     final buffer = StringBuffer();
     for (int i = 0; i < capped.length; i++) {
-      if (_spaceAfter.contains(i)) buffer.write(' ');
+      if (_spaceAfter.contains(i)) {
+        buffer.write(' ');
+      }
       buffer.write(capped[i]);
+      digitsWritten++;
+      if (digitsWritten == digitsBeforeCursor) {
+        cursorOffset = buffer.length;
+      }
     }
-    final text = buffer.toString();
+
+    if (digitsBeforeCursor > digitsWritten) {
+      cursorOffset = buffer.length;
+    }
 
     return TextEditingValue(
-      text: text,
-      selection: TextSelection.collapsed(offset: text.length),
+      text: buffer.toString(),
+      selection: TextSelection.collapsed(offset: cursorOffset),
     );
   }
 

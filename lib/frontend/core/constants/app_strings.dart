@@ -7,6 +7,7 @@ class AppStrings {
   static const String appSubtitle =
       "O'zbekiston veterinariya va chorvachilik ekotizimi";
   static const String start = 'Boshlash';
+  static const String startApp = 'Ilovani boshlash';
   static const String next = 'Keyingisi';
   static const String skip = "O'tkazib yuborish";
   static const String back = 'Orqaga';

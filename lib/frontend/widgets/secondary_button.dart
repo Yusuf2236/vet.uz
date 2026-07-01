@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../core/theme/app_colors.dart';
 import '../core/theme/app_spacing.dart';
 import '../core/theme/app_text_styles.dart';
 
@@ -9,8 +8,8 @@ class SecondaryButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
   final IconData? leadingIcon;
-  final Color foreground;
-  final Color borderColor;
+  final Color? foreground;
+  final Color? borderColor;
   final bool expanded;
   final double height;
 
@@ -19,21 +18,24 @@ class SecondaryButton extends StatelessWidget {
     required this.label,
     required this.onPressed,
     this.leadingIcon,
-    this.foreground = AppColors.textPrimary,
-    this.borderColor = AppColors.divider,
+    this.foreground,
+    this.borderColor,
     this.expanded = true,
     this.height = 56,
   });
 
   @override
   Widget build(BuildContext context) {
+    final effectiveForeground = foreground ?? Theme.of(context).colorScheme.onSurface;
+    final effectiveBorderColor = borderColor ?? Theme.of(context).dividerColor;
+
     final button = SizedBox(
       height: height,
       child: OutlinedButton(
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
-          foregroundColor: foreground,
-          side: BorderSide(color: borderColor, width: 1.2),
+          foregroundColor: effectiveForeground,
+          side: BorderSide(color: effectiveBorderColor, width: 1.2),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.lg),
           ),
@@ -44,7 +46,7 @@ class SecondaryButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (leadingIcon != null) ...[
-              Icon(leadingIcon, size: 18, color: foreground),
+              Icon(leadingIcon, size: 18, color: effectiveForeground),
               const SizedBox(width: AppSpacing.sm),
             ],
             Flexible(
@@ -52,7 +54,7 @@ class SecondaryButton extends StatelessWidget {
                 fit: BoxFit.scaleDown,
                 child: Text(
                   label,
-                  style: AppTextStyles.button.copyWith(color: foreground),
+                  style: AppTextStyles.button.copyWith(color: effectiveForeground),
                 ),
               ),
             ),

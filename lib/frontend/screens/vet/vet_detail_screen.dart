@@ -11,6 +11,7 @@ import '../../models/veterinarian.dart';
 import '../../widgets/price_text.dart';
 import '../../widgets/primary_button.dart';
 import '../../widgets/remote_image.dart';
+import 'vet_call_search_screen.dart';
 
 /// Veterinar tafsilotlari + xizmat band qilish.
 class VetDetailScreen extends StatelessWidget {
@@ -270,13 +271,16 @@ class _BookingSheetState extends State<_BookingSheet> {
 
   void _confirm() {
     final d = _days[_dayIndex];
-    final label = '${d.day}.${d.month} ${_slots[_slotIndex!]}';
-    // Messenger'ni pop'dan OLDIN olamiz (pop'dan keyin bu route topilmaydi).
-    final messenger = ScaffoldMessenger.of(context);
-    Navigator.of(context).pop();
-    messenger
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text('Ko\'rik band qilindi: $label')));
+    final label = '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')} ${_slots[_slotIndex!]}';
+    Navigator.of(context).pop(); // pop booking sheet
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => VetCallSearchScreen(
+          vet: widget.vet,
+          dateTimeLabel: label,
+        ),
+      ),
+    );
   }
 
   @override

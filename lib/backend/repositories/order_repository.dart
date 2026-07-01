@@ -123,10 +123,17 @@ class OrderRepository {
     ),
   ];
 
+  static final List<OrderModel> _localOrders = [];
+
+  static void addLocalOrder(OrderModel order) {
+    _localOrders.insert(0, order);
+  }
+
   /// Sessiyasiz/demo holat uchun namunaviy buyurtmalar.
   List<OrderModel> _demoOrders() {
     final now = DateTime.now();
     return [
+      ..._localOrders,
       OrderModel(
         id: 1024,
         totalSom: 218000,

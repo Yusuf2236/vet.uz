@@ -572,9 +572,9 @@ class _PlanCard extends StatelessWidget {
                             color: AppColors.amber,
                             borderRadius: BorderRadius.circular(AppRadius.sm),
                           ),
-                          child: const Text(
-                            "TEJAMKOR -30%",
-                            style: TextStyle(
+                          child: Text(
+                            badge!,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 9,
                               fontWeight: FontWeight.bold,

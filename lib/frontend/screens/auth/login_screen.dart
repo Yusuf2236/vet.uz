@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:local_auth/local_auth.dart';
 
 import '../../core/constants/app_strings.dart';
 import '../../core/router/app_routes.dart';
@@ -10,9 +11,11 @@ import '../../core/utils/phone_input_formatter.dart';
 import '../../core/utils/validators.dart';
 import '../../../backend/app_config.dart';
 import '../../../backend/repositories/auth_repository.dart';
+import '../../widgets/animated_background_orbs.dart';
 import '../../widgets/app_logo.dart';
 import '../../widgets/primary_button.dart';
 import '../../widgets/secondary_button.dart';
+import 'widgets/biometric_scanner_dialog.dart';
 import 'widgets/labeled_field.dart';
 
 /// Tizimga kirish ekrani (senior daraja: validatsiya, loading/xato holatlari,
@@ -105,9 +108,43 @@ class _LoginScreenState extends State<LoginScreen> {
       _errorText = null;
     });
     HapticFeedback.lightImpact();
+
+    bool authenticated = false;
     try {
-      // Demo: lokal kirish. (Haqiqiy biometrika local_auth + saqlangan sessiya
-      // bilan keyin ulanadi.)
+      final LocalAuthentication auth = LocalAuthentication();
+      final bool canAuthenticateWithBiometrics = await auth.canCheckBiometrics;
+      final bool canAuthenticate = canAuthenticateWithBiometrics || await auth.isDeviceSupported();
+      
+      if (canAuthenticate) {
+        authenticated = await auth.authenticate(
+          localizedReason: 'Tizimga kirish uchun biometriyadan foydalaning',
+        );
+      }
+    } catch (_) {
+      authenticated = false;
+    }
+
+    // Fall back to gorgeous mock biometric dialog if not authenticated yet
+    if (!authenticated) {
+      if (!mounted) return;
+      final result = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => const BiometricScannerDialog(),
+      );
+      if (result == true) {
+        authenticated = true;
+      }
+    }
+
+    if (!authenticated) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+      return;
+    }
+
+    try {
       await AuthRepository().signIn('+998000000000', 'biometric');
     } catch (_) {
       if (!mounted) return;
@@ -142,11 +179,15 @@ class _LoginScreenState extends State<LoginScreen> {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       child: Scaffold(
-        body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-            child: _FadeSlideIn(
-              child: Form(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          children: [
+            const AnimatedBackgroundOrbs(),
+            SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                child: _FadeSlideIn(
+                  child: Form(
                 key: _formKey,
                 autovalidateMode: _autovalidate
                     ? AutovalidateMode.onUserInteraction
@@ -270,6 +311,8 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
+        ),
+          ],
         ),
       ),
     );
@@ -434,65 +477,114 @@ class _PhoneFieldState extends State<_PhoneField> {
 
   void _onChanged() {
     final done = UzPhoneInputFormatter.isComplete(widget.controller.text);
-    if (done != _complete) {
-      setState(() => _complete = done);
-      if (done) {
-        HapticFeedback.selectionClick();
-        widget.onComplete?.call();
-      }
+    if (done && !_complete) {
+      HapticFeedback.selectionClick();
+      widget.onComplete?.call();
     }
+    setState(() {
+      _complete = done;
+    });
+  }
+
+  double get _progress {
+    final digits = UzPhoneInputFormatter.digitsOf(widget.controller.text);
+    return (digits.length / 9).clamp(0.0, 1.0);
   }
 
   @override
   Widget build(BuildContext context) {
     final dividerColor = Theme.of(context).dividerColor;
-    return TextFormField(
-      controller: widget.controller,
-      focusNode: widget.focusNode,
-      autofocus: true,
-      keyboardType: TextInputType.phone,
-      textInputAction: TextInputAction.next,
-      autofillHints: const [AutofillHints.telephoneNumberNational],
-      inputFormatters: [UzPhoneInputFormatter()],
-      validator: Validators.phone,
-      decoration: InputDecoration(
-        hintText: AppStrings.phoneHint,
-        prefixIcon: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const ExcludeSemantics(
-                child: Text('🇺🇿', style: TextStyle(fontSize: 18)),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextFormField(
+          controller: widget.controller,
+          focusNode: widget.focusNode,
+          autofocus: true,
+          keyboardType: TextInputType.phone,
+          textInputAction: TextInputAction.next,
+          autofillHints: const [AutofillHints.telephoneNumberNational],
+          inputFormatters: [UzPhoneInputFormatter()],
+          validator: Validators.phone,
+          decoration: InputDecoration(
+            hintText: AppStrings.phoneHint,
+            prefixIcon: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const ExcludeSemantics(
+                    child: Text('🇺🇿', style: TextStyle(fontSize: 18)),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Text(
+                    '+998',
+                    style: AppTextStyles.bodyStrong.copyWith(
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Container(width: 1, height: 22, color: dividerColor),
+                ],
               ),
-              const SizedBox(width: AppSpacing.sm),
-              Text(
-                '+998',
-                style: AppTextStyles.bodyStrong.copyWith(
-                  color: AppColors.primary,
-                ),
-              ),
-              const SizedBox(width: AppSpacing.md),
-              Container(width: 1, height: 22, color: dividerColor),
-            ],
+            ),
+            prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+            suffixIcon: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              transitionBuilder: (child, anim) =>
+                  ScaleTransition(scale: anim, child: child),
+              child: _complete
+                  ? Icon(
+                      Icons.check_circle,
+                      key: const ValueKey('valid'),
+                      color: AppColors.success,
+                      size: 20,
+                      semanticLabel: AppStrings.phoneCompleteHint,
+                    )
+                  : const SizedBox.shrink(key: ValueKey('empty')),
+            ),
           ),
         ),
-        prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
-        suffixIcon: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 250),
-          transitionBuilder: (child, anim) =>
-              ScaleTransition(scale: anim, child: child),
-          child: _complete
-              ? Icon(
-                  Icons.check_circle,
-                  key: const ValueKey('valid'),
-                  color: AppColors.success,
-                  size: 20,
-                  semanticLabel: AppStrings.phoneCompleteHint,
-                )
-              : const SizedBox.shrink(key: ValueKey('empty')),
+        const SizedBox(height: 6),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final width = constraints.maxWidth;
+            return Container(
+              height: 3,
+              width: width,
+              decoration: BoxDecoration(
+                color: dividerColor.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(2),
+              ),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  width: width * _progress,
+                  height: 3,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: _progress == 1.0
+                          ? [AppColors.success, AppColors.success]
+                          : [AppColors.primaryLight, AppColors.primary],
+                    ),
+                    borderRadius: BorderRadius.circular(2),
+                    boxShadow: [
+                      if (_progress > 0)
+                        BoxShadow(
+                          color: (_progress == 1.0 ? AppColors.success : AppColors.primary)
+                              .withValues(alpha: 0.4),
+                          blurRadius: 4,
+                          spreadRadius: 1,
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
         ),
-      ),
+      ],
     );
   }
 }

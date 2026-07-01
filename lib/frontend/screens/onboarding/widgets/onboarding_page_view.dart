@@ -8,7 +8,7 @@ import 'page_progress.dart';
 
 /// Bitta onboarding sahifasi: tepada rangli rasm kartasi, pastda oq panel
 /// (progress + sarlavha + tavsif).
-class OnboardingPageView extends StatelessWidget {
+class OnboardingPageView extends StatefulWidget {
   final OnboardingItem item;
   final int index;
   final int total;
@@ -19,6 +19,82 @@ class OnboardingPageView extends StatelessWidget {
     required this.index,
     required this.total,
   });
+
+  @override
+  State<OnboardingPageView> createState() => _OnboardingPageViewState();
+}
+
+class _OnboardingPageViewState extends State<OnboardingPageView>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _animController;
+  late final Animation<double> _titleOpacity;
+  late final Animation<Offset> _titleSlide;
+  late final Animation<double> _bodyOpacity;
+  late final Animation<Offset> _bodySlide;
+  late final Animation<double> _imageOpacity;
+  late final Animation<double> _imageScale;
+
+  @override
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 700),
+    );
+
+    _imageOpacity = CurvedAnimation(
+      parent: _animController,
+      curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
+    );
+    _imageScale = Tween<double>(
+      begin: 0.82,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _animController,
+      curve: const Interval(0.0, 0.8, curve: Curves.easeOutBack),
+    ));
+
+    _titleOpacity = CurvedAnimation(
+      parent: _animController,
+      curve: const Interval(0.2, 0.7, curve: Curves.easeOut),
+    );
+    _titleSlide = Tween<Offset>(
+      begin: const Offset(0.0, 0.15),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _animController,
+      curve: const Interval(0.2, 0.7, curve: Curves.easeOut),
+    ));
+
+    _bodyOpacity = CurvedAnimation(
+      parent: _animController,
+      curve: const Interval(0.4, 0.9, curve: Curves.easeOut),
+    );
+    _bodySlide = Tween<Offset>(
+      begin: const Offset(0.0, 0.15),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _animController,
+      curve: const Interval(0.4, 0.9, curve: Curves.easeOut),
+    ));
+
+    _animController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant OnboardingPageView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.item != widget.item) {
+      _animController.reset();
+      _animController.forward();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,15 +111,23 @@ class OnboardingPageView extends StatelessWidget {
             width: double.infinity,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: item.gradient,
+                colors: widget.item.gradient,
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
             ),
-            child: Center(child: _ImageCard(item: item)),
+            child: Center(
+              child: ScaleTransition(
+                scale: _imageScale,
+                child: FadeTransition(
+                  opacity: _imageOpacity,
+                  child: _ImageCard(item: widget.item),
+                ),
+              ),
+            ),
           ),
         ),
-        // Oq panel
+        // Oq/Qorong'u panel
         Expanded(
           flex: 6,
           child: Container(
@@ -63,16 +147,28 @@ class OnboardingPageView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PageProgress(current: index, total: total),
+                PageProgress(current: widget.index, total: widget.total),
                 const SizedBox(height: AppSpacing.xxl),
-                Text(
-                  item.title,
-                  style: AppTextStyles.h1.copyWith(color: titleColor),
+                SlideTransition(
+                  position: _titleSlide,
+                  child: FadeTransition(
+                    opacity: _titleOpacity,
+                    child: Text(
+                      widget.item.title,
+                      style: AppTextStyles.h1.copyWith(color: titleColor),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.md),
-                Text(
-                  item.body,
-                  style: AppTextStyles.body.copyWith(color: bodyColor),
+                SlideTransition(
+                  position: _bodySlide,
+                  child: FadeTransition(
+                    opacity: _bodyOpacity,
+                    child: Text(
+                      widget.item.body,
+                      style: AppTextStyles.body.copyWith(color: bodyColor),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -89,9 +185,20 @@ class _ImageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 190,
-      height: 190,
+    return Container(
+      width: 220,
+      height: 220,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.16),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
       child: Stack(
         clipBehavior: Clip.none,
         children: [

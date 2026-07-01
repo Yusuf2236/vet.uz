@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../core/constants/app_strings.dart';
-import '../core/theme/app_colors.dart';
 import '../core/theme/app_spacing.dart';
 import '../core/theme/app_text_styles.dart';
 
@@ -11,7 +10,7 @@ class PrimaryButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
   final IconData? trailingIcon;
-  final Color background;
+  final Color? background;
   final Color foreground;
   final bool expanded;
   final bool loading;
@@ -22,7 +21,7 @@ class PrimaryButton extends StatelessWidget {
     required this.label,
     required this.onPressed,
     this.trailingIcon,
-    this.background = AppColors.primary,
+    this.background,
     this.foreground = Colors.white,
     this.expanded = true,
     this.loading = false,
@@ -33,15 +32,16 @@ class PrimaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     // Yuklanayotganda bosishni bloklaymiz (double-tap oldini olish).
     final effectiveOnPressed = loading ? null : onPressed;
+    final effectiveBackground = background ?? Theme.of(context).colorScheme.primary;
 
     final button = SizedBox(
       height: height,
       child: ElevatedButton(
         onPressed: effectiveOnPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: background,
+          backgroundColor: effectiveBackground,
           foregroundColor: foreground,
-          disabledBackgroundColor: background.withValues(
+          disabledBackgroundColor: effectiveBackground.withValues(
             alpha: loading ? 0.85 : 0.5,
           ),
           elevation: 0,

@@ -17,14 +17,15 @@ void main() {
     await tester.pumpWidget(const VetUzApp(initialRoute: '/'));
 
     expect(find.text(AppInfo.name), findsWidgets);
-    expect(find.text('Boshlash'), findsOneWidget);
+    expect(find.text('Ilovani boshlash'), findsOneWidget);
   });
 
   testWidgets('Boshlash bosilganda onboardingga o\'tadi',
       (WidgetTester tester) async {
     await tester.pumpWidget(const VetUzApp(initialRoute: '/'));
 
-    await tester.tap(find.text('Boshlash'));
+    await tester.tap(find.text('Ilovani boshlash'));
+    await tester.pump(const Duration(milliseconds: 150));
     await tester.pumpAndSettle();
 
     expect(find.text('Veterinariya xizmatlari'), findsOneWidget);
