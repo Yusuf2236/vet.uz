@@ -9,10 +9,11 @@ import '../supabase_service.dart';
 /// Shu tufayli ilova SMS provayderisiz ham to'liq ishlaydi.
 class AuthRepository {
   bool get isLoggedIn {
+    if (PreferencesService.instance.isLoggedIn) return true;
     if (AppConfig.useBackendAuth && SupabaseService.isReady) {
       return SupabaseService.client.auth.currentSession != null;
     }
-    return PreferencesService.instance.isLoggedIn;
+    return false;
   }
 
   /// Telefon (+998XXXXXXXXX) va parol bilan kirish.
@@ -23,14 +24,11 @@ class AuthRepository {
           phone: phoneE164,
           password: password,
         );
-      } catch (e) {
-        // Supabase Auth xatoligi bo'lganda (masalan, tarmoq yoki provider xatosi),
-        // foydalanuvchiga xalaqit bermaslik uchun lokal login qilamiz
-        await PreferencesService.instance.setLoggedIn(true);
+      } catch (_) {
+        // Supabase xatoligi bo'lsa ham lokal foydalanishga to'sqinlik qilmaymiz
       }
-    } else {
-      await PreferencesService.instance.setLoggedIn(true);
     }
+    await PreferencesService.instance.setLoggedIn(true);
   }
 
   /// Ro'yxatdan o'tish.
@@ -41,19 +39,18 @@ class AuthRepository {
           phone: phoneE164,
           password: password,
         );
-      } catch (e) {
-        // Supabase Auth ro'yxatdan o'tish xatosi (masalan, SMS provider sozlanmaganligi),
-        // bo'lsa lokal ro'yxatdan o'tkazish rejimiga tushamiz
-        await PreferencesService.instance.setLoggedIn(true);
+      } catch (_) {
+        // Supabase xatoligi bo'lsa ham lokal foydalanishga to'sqinlik qilmaymiz
       }
-    } else {
-      await PreferencesService.instance.setLoggedIn(true);
     }
+    await PreferencesService.instance.setLoggedIn(true);
   }
 
   Future<void> signOut() async {
     if (AppConfig.useBackendAuth && SupabaseService.isReady) {
-      await SupabaseService.client.auth.signOut();
+      try {
+        await SupabaseService.client.auth.signOut();
+      } catch (_) {}
     }
     await PreferencesService.instance.setLoggedIn(false);
   }
