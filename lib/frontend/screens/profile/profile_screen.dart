@@ -36,8 +36,11 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   late Future<UserProfile> _future = ProfileRepository().fetchCurrentProfile();
 
-  void _reload() =>
-      setState(() => _future = ProfileRepository().fetchCurrentProfile());
+  void _reload() {
+    setState(() {
+      _future = ProfileRepository().fetchCurrentProfile();
+    });
+  }
 
   Future<void> _edit(UserProfile current) async {
     final saved = await Navigator.of(context).push<bool>(
