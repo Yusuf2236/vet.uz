@@ -12,6 +12,7 @@ import '../../widgets/price_text.dart';
 import '../../widgets/primary_button.dart';
 import '../../widgets/remote_image.dart';
 import 'vet_call_search_screen.dart';
+import 'vet_chat_screen.dart';
 
 /// Veterinar tafsilotlari + xizmat band qilish.
 class VetDetailScreen extends StatelessWidget {
@@ -187,6 +188,22 @@ class VetDetailScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(width: AppSpacing.lg),
+              IconButton.filled(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => VetChatScreen(vet: vet),
+                    ),
+                  );
+                },
+                style: IconButton.styleFrom(
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                  foregroundColor: AppColors.primary,
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                ),
+                icon: const Icon(Icons.chat_bubble_outline),
+              ),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: PrimaryButton(
                   label: AppStrings.book,
