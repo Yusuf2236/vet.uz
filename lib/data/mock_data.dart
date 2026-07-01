@@ -125,6 +125,8 @@ class MockData {
       priceSom: 80000,
       district: 'Mirobod',
       animalType: 'It / mushuk',
+      latitude: 41.3002,
+      longitude: 69.2685,
     ),
     Veterinarian(
       name: 'Dr. Dilnoza Yusupova',
@@ -134,6 +136,8 @@ class MockData {
       priceSom: 150000,
       district: 'Yunusobod',
       animalType: 'It / mushuk',
+      latitude: 41.3524,
+      longitude: 69.2842,
     ),
     Veterinarian(
       name: 'Dr. Otabek Ismoilov',
@@ -143,6 +147,8 @@ class MockData {
       priceSom: 200000,
       district: 'Sergeli',
       animalType: 'Sigir / qoramol',
+      latitude: 41.2294,
+      longitude: 69.2135,
     ),
     Veterinarian(
       name: 'Dr. Sardor Toxtayev',
@@ -152,6 +158,8 @@ class MockData {
       priceSom: 100000,
       district: 'Chilonzor',
       animalType: 'It / mushuk',
+      latitude: 41.2856,
+      longitude: 69.2048,
     ),
     Veterinarian(
       name: 'Dr. Malika Sodiqova',
@@ -162,6 +170,8 @@ class MockData {
       district: 'Bektemir',
       animalType: "Sigir / qo'y",
       isAvailable: false,
+      latitude: 41.3195,
+      longitude: 69.3452,
     ),
     Veterinarian(
       name: 'Dr. Aziza Mirzayeva',
@@ -171,6 +181,8 @@ class MockData {
       priceSom: 90000,
       district: 'Yashnobod',
       animalType: "Qush / to'tiqush",
+      latitude: 41.3054,
+      longitude: 69.3142,
     ),
     Veterinarian(
       name: 'Dr. Rustam Qodirov',
@@ -180,6 +192,8 @@ class MockData {
       priceSom: 160000,
       district: 'Uchtepa',
       animalType: 'It / mushuk',
+      latitude: 41.2985,
+      longitude: 69.1764,
     ),
     Veterinarian(
       name: 'Dr. Gulnora Hamidova',
@@ -189,6 +203,8 @@ class MockData {
       priceSom: 70000,
       district: 'Olmazor',
       animalType: 'It / mushuk',
+      latitude: 41.3654,
+      longitude: 69.2185,
     ),
   ];
 

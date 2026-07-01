@@ -8,6 +8,8 @@ class Veterinarian {
   final bool isAvailable;
   final String district;
   final String animalType;
+  final double? latitude;
+  final double? longitude;
 
   const Veterinarian({
     required this.name,
@@ -18,6 +20,8 @@ class Veterinarian {
     this.isAvailable = true,
     this.district = '',
     this.animalType = '',
+    this.latitude,
+    this.longitude,
   });
 
   /// Supabase `vets` jadvali qatoridan model yasaydi.
@@ -30,12 +34,16 @@ class Veterinarian {
     isAvailable: json['is_available'] as bool? ?? true,
     district: json['district'] as String? ?? '',
     animalType: json['animal_type'] as String? ?? '',
+    latitude: (json['latitude'] as num?)?.toDouble(),
+    longitude: (json['longitude'] as num?)?.toDouble(),
   );
 
   Veterinarian copyWith({
     bool? isAvailable,
     double? rating,
     double? distanceKm,
+    double? latitude,
+    double? longitude,
   }) => Veterinarian(
     name: name,
     specialty: specialty,
@@ -45,6 +53,8 @@ class Veterinarian {
     isAvailable: isAvailable ?? this.isAvailable,
     district: district,
     animalType: animalType,
+    latitude: latitude ?? this.latitude,
+    longitude: longitude ?? this.longitude,
   );
 
   /// Ism-familiyadan bosh harflar (avatar uchun): "Dr. Jahongir" -> "JT".
