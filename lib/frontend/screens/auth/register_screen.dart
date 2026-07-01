@@ -70,11 +70,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
     if (!mounted) return;
-    if (Navigator.of(context).canPop()) {
-      Navigator.of(context).pop(true);
-    } else {
-      Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.main, (route) => false);
-    }
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      AppRoutes.main,
+      (route) => false,
+    );
   }
 
   @override
