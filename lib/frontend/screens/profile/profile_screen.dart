@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../backend/repositories/auth_repository.dart';
-import '../../backend/repositories/profile_repository.dart';
+import '../../../backend/repositories/auth_repository.dart';
+import '../../../backend/repositories/profile_repository.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/router/app_routes.dart';
 import '../../core/theme/app_colors.dart';

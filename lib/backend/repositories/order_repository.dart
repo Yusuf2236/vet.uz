@@ -1,7 +1,7 @@
 import '../supabase_service.dart';
-import '../../models/order.dart';
-import '../../models/order_item.dart';
-import '../../models/product.dart';
+import '../../frontend/models/order.dart';
+import '../../frontend/models/order_item.dart';
+import '../../frontend/models/product.dart';
 import 'mock_realtime.dart';
 
 /// Buyurtmalar manbai (Supabase `orders` + `order_items`).

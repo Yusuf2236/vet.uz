@@ -1,6 +1,6 @@
 import '../supabase_service.dart';
-import '../../models/disease.dart';
-import '../../data/mock_data.dart';
+import '../../frontend/models/disease.dart';
+import '../../frontend/data/mock_data.dart';
 
 /// VetAI uchun kasalliklar manbai (Supabase yoki MockData).
 class DiseaseRepository {

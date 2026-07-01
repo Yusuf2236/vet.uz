@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
-import '../../backend/repositories/vet_repository.dart';
+import '../../../backend/repositories/vet_repository.dart';
 import '../../models/veterinarian.dart';
 import '../../widgets/async_view.dart';
 import '../../widgets/vet_card.dart';

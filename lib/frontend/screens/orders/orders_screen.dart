@@ -4,7 +4,7 @@ import '../../core/constants/app_strings.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
-import '../../backend/repositories/order_repository.dart';
+import '../../../backend/repositories/order_repository.dart';
 import '../../models/order.dart';
 import '../../widgets/price_text.dart';
 import 'order_detail_screen.dart';

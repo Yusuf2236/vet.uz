@@ -1,6 +1,6 @@
 import '../supabase_service.dart';
-import '../../models/clinic.dart';
-import '../../data/mock_data.dart';
+import '../../frontend/models/clinic.dart';
+import '../../frontend/data/mock_data.dart';
 
 /// Klinikalar manbai (Supabase yoki MockData).
 class ClinicRepository {

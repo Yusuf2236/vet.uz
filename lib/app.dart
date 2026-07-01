@@ -1,12 +1,12 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 
-import 'core/constants/app_info.dart';
-import 'core/router/app_router.dart';
-import 'core/router/app_routes.dart';
-import 'core/state/cart_controller.dart';
-import 'core/theme/app_theme.dart';
-import 'core/theme/theme_controller.dart';
+import 'frontend/core/constants/app_info.dart';
+import 'frontend/core/router/app_router.dart';
+import 'frontend/core/router/app_routes.dart';
+import 'frontend/core/state/cart_controller.dart';
+import 'frontend/core/theme/app_theme.dart';
+import 'frontend/core/theme/theme_controller.dart';
 
 /// Ilova ildizi — tema (light/dark) va marshrutlashni sozlaydi.
 class VetUzApp extends StatefulWidget {

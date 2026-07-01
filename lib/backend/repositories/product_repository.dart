@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../supabase_service.dart';
-import '../../core/theme/app_colors.dart';
-import '../../models/product.dart';
-import '../../data/mock_data.dart';
+import '../../frontend/core/theme/app_colors.dart';
+import '../../frontend/models/product.dart';
+import '../../frontend/data/mock_data.dart';
 import 'mock_realtime.dart';
 
 /// Mahsulotlar manbai (Supabase yoki MockData).

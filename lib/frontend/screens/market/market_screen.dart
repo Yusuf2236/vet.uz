@@ -6,7 +6,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../data/mock_data.dart';
-import '../../backend/repositories/product_repository.dart';
+import '../../../backend/repositories/product_repository.dart';
 import '../../models/product.dart';
 import '../../widgets/circle_icon_button.dart';
 import '../../widgets/product_card.dart';

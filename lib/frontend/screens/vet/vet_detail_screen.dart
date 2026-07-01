@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../backend/repositories/auth_repository.dart';
+import '../../../backend/repositories/auth_repository.dart';
 import '../../core/router/app_routes.dart';
 import '../../core/constants/app_images.dart';
 import '../../core/constants/app_strings.dart';

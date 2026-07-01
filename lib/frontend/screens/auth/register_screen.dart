@@ -7,7 +7,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/utils/phone_input_formatter.dart';
 import '../../core/utils/validators.dart';
-import '../../backend/repositories/auth_repository.dart';
+import '../../../backend/repositories/auth_repository.dart';
 import '../../widgets/primary_button.dart';
 import 'widgets/labeled_field.dart';
 

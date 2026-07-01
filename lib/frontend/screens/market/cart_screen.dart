@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../../backend/repositories/auth_repository.dart';
+import '../../../backend/repositories/auth_repository.dart';
 import '../../core/router/app_routes.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/state/cart_controller.dart';
 import '../../core/theme/app_colors.dart';
-import '../../backend/repositories/order_repository.dart';
+import '../../../backend/repositories/order_repository.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../models/product.dart';

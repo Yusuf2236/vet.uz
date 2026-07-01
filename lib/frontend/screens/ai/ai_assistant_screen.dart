@@ -5,7 +5,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../data/mock_data.dart';
-import '../../backend/repositories/disease_repository.dart';
+import '../../../backend/repositories/disease_repository.dart';
 import '../../models/disease.dart';
 
 /// VetAI — oddiy qoidaga asoslangan simptom-tekshiruvchi.

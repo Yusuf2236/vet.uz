@@ -5,7 +5,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../data/mock_data.dart';
-import '../../backend/repositories/clinic_repository.dart';
+import '../../../backend/repositories/clinic_repository.dart';
 import '../../models/clinic.dart';
 
 /// Favqulodda yordam — 24/7 klinikalar va davlat ishonch telefonlari.

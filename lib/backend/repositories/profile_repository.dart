@@ -1,6 +1,6 @@
-import '../../core/services/preferences_service.dart';
-import '../../data/mock_data.dart';
-import '../../models/user_profile.dart';
+import '../../frontend/core/services/preferences_service.dart';
+import '../../frontend/data/mock_data.dart';
+import '../../frontend/models/user_profile.dart';
 import '../supabase_service.dart';
 
 /// Joriy foydalanuvchi profili.

@@ -1,6 +1,6 @@
 import '../supabase_service.dart';
-import '../../models/veterinarian.dart';
-import '../../data/mock_data.dart';
+import '../../frontend/models/veterinarian.dart';
+import '../../frontend/data/mock_data.dart';
 import 'mock_realtime.dart';
 
 /// Veterinarlar manbai. Backend sozlangan bo'lsa Supabase'dan, aks holda

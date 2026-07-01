@@ -1,5 +1,5 @@
 import '../app_config.dart';
-import '../../core/services/preferences_service.dart';
+import '../../frontend/core/services/preferences_service.dart';
 import '../supabase_service.dart';
 
 /// Autentifikatsiya qatlami.

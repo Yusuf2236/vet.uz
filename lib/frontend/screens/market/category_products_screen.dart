@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../backend/repositories/product_repository.dart';
+import '../../../backend/repositories/product_repository.dart';
 import '../../core/state/cart_controller.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/theme/app_spacing.dart';

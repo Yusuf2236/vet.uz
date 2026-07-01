@@ -2,8 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:vetuz/app.dart';
-import 'package:vetuz/core/constants/app_info.dart';
-import 'package:vetuz/core/services/preferences_service.dart';
+import 'package:vetuz/frontend/core/constants/app_info.dart';
+import 'package:vetuz/frontend/core/services/preferences_service.dart';
 
 void main() {
   setUp(() async {

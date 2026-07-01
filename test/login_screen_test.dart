@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:vetuz/core/constants/app_strings.dart';
-import 'package:vetuz/screens/auth/login_screen.dart';
+import 'package:vetuz/frontend/core/constants/app_strings.dart';
+import 'package:vetuz/frontend/screens/auth/login_screen.dart';
 
 void main() {
   testWidgets("Bo'sh forma — validatsiya xatolari chiqadi, navigatsiya yo'q",

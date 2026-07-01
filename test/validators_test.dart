@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:vetuz/core/constants/app_strings.dart';
-import 'package:vetuz/core/utils/validators.dart';
+import 'package:vetuz/frontend/core/constants/app_strings.dart';
+import 'package:vetuz/frontend/core/utils/validators.dart';
 
 void main() {
   group('Validators.phone', () {

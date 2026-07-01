@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'app.dart';
-import 'core/services/preferences_service.dart';
+import 'frontend/core/services/preferences_service.dart';
 import 'backend/supabase_service.dart';
 
 Future<void> main() async {
