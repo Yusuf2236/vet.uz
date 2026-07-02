@@ -23,13 +23,15 @@ class HelpCenterScreen extends StatelessWidget {
         padding: const EdgeInsets.all(AppSpacing.screenH),
         children: [
           for (final f in MockData.faqs) ...[
-            Container(
-              clipBehavior: Clip.antiAlias,
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
+            Card(
+              margin: EdgeInsets.zero,
+              elevation: 0,
+              color: Theme.of(context).cardColor,
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(AppRadius.lg),
-                border: Border.all(color: Theme.of(context).dividerColor),
+                side: BorderSide(color: Theme.of(context).dividerColor),
               ),
+              clipBehavior: Clip.antiAlias,
               child: Theme(
                 data: Theme.of(
                   context,

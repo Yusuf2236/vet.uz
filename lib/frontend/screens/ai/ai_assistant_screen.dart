@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../backend/repositories/ai_repository.dart';
 import '../../core/constants/app_strings.dart';
+import '../../core/services/preferences_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -8,9 +10,9 @@ import '../../data/mock_data.dart';
 import '../../../backend/repositories/disease_repository.dart';
 import '../../models/disease.dart';
 
-/// VetAI — oddiy qoidaga asoslangan simptom-tekshiruvchi.
-/// Tanlangan hayvon bo'yicha kiritilgan belgilarni kasalliklar bilan
-/// solishtirib, ehtimoliy holat va tavsiyani qaytaradi (research datasi).
+/// VetAI — Simpson-tekshiruvchi va Gemini AI chat boti.
+/// Kalit bo'lmaganda offline rejimda simptomlarni solishtiradi,
+/// kalit bo'lganda Gemini AI orqali har qanday savolga javob beradi.
 class AiAssistantScreen extends StatefulWidget {
   const AiAssistantScreen({super.key});
 
@@ -23,11 +25,13 @@ class _AiMessage {
   final String text;
   final Disease? disease;
   final bool noMatch;
+  final bool isLoading;
   const _AiMessage({
     required this.isUser,
     this.text = '',
     this.disease,
     this.noMatch = false,
+    this.isLoading = false,
   });
 }
 
@@ -95,19 +99,68 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
     return bestScore > 0 ? best : null;
   }
 
-  void _send(String raw) {
+  Future<void> _send(String raw) async {
     final text = raw.trim();
     if (text.isEmpty) return;
-    final match = _match(text);
+
     setState(() {
       _messages.add(_AiMessage(isUser: true, text: text));
-      _messages.add(
-        match != null
-            ? _AiMessage(isUser: false, disease: match)
-            : const _AiMessage(isUser: false, noMatch: true),
-      );
       _input.clear();
     });
+    _scrollToBottom();
+
+    final apiKey = PreferencesService.instance.geminiApiKey ?? '';
+    if (apiKey.isEmpty) {
+      // Offline mock match mode
+      final match = _match(text);
+      setState(() {
+        _messages.add(
+          match != null
+              ? _AiMessage(isUser: false, disease: match)
+              : const _AiMessage(isUser: false, noMatch: true),
+        );
+      });
+      _scrollToBottom();
+    } else {
+      // Online Gemini API mode
+      const loader = _AiMessage(isUser: false, isLoading: true);
+      setState(() {
+        _messages.add(loader);
+      });
+      _scrollToBottom();
+
+      try {
+        final history = _messages
+            .where((m) => !m.isLoading && m.disease == null && !m.noMatch)
+            .map((m) => {
+                  'role': m.isUser ? 'user' : 'model',
+                  'text': m.text,
+                })
+            .toList();
+
+        final aiRepo = AiRepository();
+        final response = await aiRepo.getAiResponse(history, apiKey);
+
+        if (mounted) {
+          setState(() {
+            _messages.remove(loader);
+            _messages.add(_AiMessage(isUser: false, text: response));
+          });
+          _scrollToBottom();
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            _messages.remove(loader);
+            _messages.add(_AiMessage(isUser: false, text: "Xatolik: $e"));
+          });
+          _scrollToBottom();
+        }
+      }
+    }
+  }
+
+  void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scroll.hasClients) {
         _scroll.animateTo(
@@ -119,11 +172,137 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
     });
   }
 
+  void _showApiKeyDialog(BuildContext context) {
+    final controller = TextEditingController(text: PreferencesService.instance.geminiApiKey ?? '');
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(ctx).cardColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg)),
+        title: Row(
+          children: [
+            const Icon(Icons.vpn_key_rounded, color: AppColors.amber),
+            const SizedBox(width: AppSpacing.sm),
+            Text("Gemini API Kaliti", style: AppTextStyles.h3),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Ilova har qanday mavzuda to'liq va erkin javob berishi uchun shaxsiy Gemini API kalitingizni kiriting:",
+              style: TextStyle(fontSize: 14),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                hintText: 'AIzaSy...',
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              ),
+              obscureText: true,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            GestureDetector(
+              onTap: () {
+                // Open standard website info or instruction
+              },
+              child: const Text(
+                "Kalitni bepul olish: aistudio.google.com",
+                style: TextStyle(
+                  color: AppColors.info,
+                  fontSize: 12,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text("Bekor qilish", style: TextStyle(color: AppColors.textMuted)),
+          ),
+          TextButton(
+            onPressed: () async {
+              await PreferencesService.instance.setGeminiApiKey(controller.text.trim());
+              if (mounted) setState(() {});
+              if (context.mounted) Navigator.pop(ctx);
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("API kaliti muvaffaqiyatli saqlandi!")),
+                );
+              }
+            },
+            child: const Text("Saqlash", style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildApiKeyBanner() {
+    final apiKey = PreferencesService.instance.geminiApiKey ?? '';
+    if (apiKey.isNotEmpty) return const SizedBox.shrink();
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
+      color: AppColors.amber.withValues(alpha: isDark ? 0.15 : 0.08),
+      child: Row(
+        children: [
+          const Icon(Icons.info_outline, color: AppColors.amber, size: 20),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Text(
+              "VetAI offline rejimda. Erkin mavzudagi savollarga javob olish uchun API kalitini kiriting.",
+              style: AppTextStyles.caption.copyWith(
+                color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+              ),
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          TextButton(
+            onPressed: () => _showApiKeyDialog(context),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+              backgroundColor: AppColors.amber.withValues(alpha: 0.12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.pill)),
+            ),
+            child: const Text(
+              "Kalit kiritish",
+              style: TextStyle(
+                color: AppColors.amber,
+                fontWeight: FontWeight.bold,
+                fontSize: 11,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final apiKey = PreferencesService.instance.geminiApiKey ?? '';
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppStrings.aiAssistant, style: AppTextStyles.h3),
+        actions: [
+          IconButton(
+            icon: Icon(
+              apiKey.isEmpty ? Icons.vpn_key_outlined : Icons.vpn_key_rounded,
+              color: apiKey.isEmpty ? AppColors.amber : AppColors.primary,
+            ),
+            onPressed: () => _showApiKeyDialog(context),
+            tooltip: 'Gemini API Kaliti',
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -133,6 +312,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
             onSelected: (a) => setState(() => _animal = a),
           ),
           Divider(height: 1, color: Theme.of(context).dividerColor),
+          _buildApiKeyBanner(),
           Expanded(
             child: ListView.builder(
               controller: _scroll,
@@ -219,14 +399,20 @@ class _MessageBubble extends StatelessWidget {
     }
 
     final isUser = message.isUser;
-    final text = message.noMatch ? AppStrings.aiNoMatch : message.text;
+    
+    // Custom error message with tip to enter API key if no match offline
+    String text = message.text;
+    if (message.noMatch) {
+      text = "${AppStrings.aiNoMatch}\n\n💡 Maslahat: Har qanday savollarga to'liq va erkin javob olish uchun yuqoridagi 🔑 tugmasi orqali shaxsiy Gemini API kalitingizni kiriting.";
+    }
+
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.only(bottom: AppSpacing.md),
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
-          vertical: AppSpacing.sm,
+          vertical: AppSpacing.sm + 2,
         ),
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.78,
@@ -238,14 +424,20 @@ class _MessageBubble extends StatelessWidget {
               ? null
               : Border.all(color: Theme.of(context).dividerColor),
         ),
-        child: Text(
-          text,
-          style: AppTextStyles.body.copyWith(
-            color: isUser
-                ? Colors.white
-                : Theme.of(context).textTheme.bodyMedium?.color,
-          ),
-        ),
+        child: message.isLoading
+            ? const SizedBox(
+                height: 20,
+                width: 45,
+                child: Center(child: _TypingIndicator()),
+              )
+            : Text(
+                text,
+                style: AppTextStyles.body.copyWith(
+                  color: isUser
+                      ? Colors.white
+                      : Theme.of(context).textTheme.bodyMedium?.color,
+                ),
+              ),
       ),
     );
   }
@@ -431,6 +623,57 @@ class _InputBar extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _TypingIndicator extends StatefulWidget {
+  const _TypingIndicator();
+
+  @override
+  State<_TypingIndicator> createState() => _TypingIndicatorState();
+}
+
+class _TypingIndicatorState extends State<_TypingIndicator> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(3, (index) {
+        return AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
+            final delay = index * 0.2;
+            final double value = (1.0 - ((_controller.value - delay) % 1.0).abs() * 2).clamp(0.0, 1.0);
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 2.5),
+              width: 7,
+              height: 7,
+              decoration: BoxDecoration(
+                color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.3 + 0.7 * value),
+                shape: BoxShape.circle,
+              ),
+            );
+          },
+        );
+      }),
     );
   }
 }

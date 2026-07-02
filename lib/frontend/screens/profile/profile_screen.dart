@@ -9,11 +9,11 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/theme/theme_controller.dart';
 import '../../data/mock_data.dart';
+import '../../models/profile_menu_item.dart';
 import '../../models/user_profile.dart';
 import '../../widgets/brand_wordmark.dart';
 import '../../widgets/circle_icon_button.dart';
 import '../../widgets/primary_button.dart';
-import '../../widgets/secondary_button.dart';
 import '../animals/my_animals_screen.dart';
 import '../common/coming_soon_screen.dart';
 import '../farm/farm_management_screen.dart';
@@ -170,10 +170,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _showRatingInfo(BuildContext context, double rating) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(ctx).cardColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+        ),
+        title: Row(
+          children: [
+            const Icon(Icons.star_rounded, color: AppColors.amber, size: 28),
+            const SizedBox(width: AppSpacing.sm),
+            Text("Reyting tizimi", style: AppTextStyles.h3),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Sizning joriy reytingingiz: $rating",
+              style: AppTextStyles.bodyStrong,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              "Ushbu ko'rsatkich sizning platformadagi faolligingiz, veterinarlar bilan bo'lgan muloqotlaringiz va buyurtmalaringiz asosida avtomatik hisoblab chiqiladi.",
+              style: AppTextStyles.body.copyWith(
+                color: Theme.of(ctx).textTheme.bodySmall?.color,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text("Tushunarli", style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = ThemeScope.of(context);
     final menu = MockData.profileMenu;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     if (!AuthRepository().isLoggedIn) {
       return _buildGuestView(context);
@@ -217,40 +260,63 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: AppSpacing.lg),
               ProfileHeaderCard(user: user),
               if (!user.isPro) ...[
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: AppSpacing.md + 4),
                 _PremiumPromoBanner(
                   onTap: () => _showPaywall(context),
                 ),
               ],
-              const SizedBox(height: AppSpacing.lg),
-              SizedBox(
-                height: 80,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    ProfileStatCard(
+              const SizedBox(height: AppSpacing.lg + 2),
+              Row(
+                children: [
+                  Expanded(
+                    child: ProfileStatCard(
                       value: '${user.animals}',
                       label: AppStrings.statAnimals,
+                      icon: Icons.agriculture_rounded,
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(builder: (_) => const MyAnimalsScreen()),
+                        );
+                      },
                     ),
-                    const SizedBox(width: AppSpacing.md),
-                    ProfileStatCard(
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: ProfileStatCard(
                       value: '${user.orders}',
                       label: AppStrings.statOrders,
+                      icon: Icons.shopping_bag_rounded,
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(builder: (_) => const OrdersScreen()),
+                        );
+                      },
                     ),
-                    const SizedBox(width: AppSpacing.md),
-                    ProfileStatCard(
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: ProfileStatCard(
                       value: user.rating.toStringAsFixed(1),
                       label: AppStrings.statRating,
+                      icon: Icons.star_rounded,
+                      onTap: () => _showRatingInfo(context, user.rating),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: AppSpacing.lg + 4),
               Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
+                  color: isDark ? AppColors.darkSurface : AppColors.surface,
                   borderRadius: BorderRadius.circular(AppRadius.lg),
                   border: Border.all(color: Theme.of(context).dividerColor),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.03),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Column(
                   children: [
@@ -258,7 +324,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       if (i != 0)
                         Divider(
                           height: 1,
-                          indent: AppSpacing.lg + 38 + AppSpacing.md,
+                          indent: AppSpacing.lg + 40 + AppSpacing.md,
                           color: Theme.of(context).dividerColor,
                         ),
                       ProfileMenuTile(
@@ -266,16 +332,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         onTap: () => _onMenu(menu[i].label),
                       ),
                     ],
+                    Divider(
+                      height: 1,
+                      indent: AppSpacing.lg + 40 + AppSpacing.md,
+                      color: Theme.of(context).dividerColor,
+                    ),
+                    ProfileMenuTile(
+                      item: const ProfileMenuItem(
+                        label: AppStrings.logout,
+                        subtitle: 'Hisobdan xavfsiz chiqish',
+                        icon: Icons.logout_rounded,
+                        color: AppColors.danger,
+                        tint: AppColors.redTint,
+                      ),
+                      onTap: _logout,
+                    ),
                   ],
                 ),
-              ),
-              const SizedBox(height: AppSpacing.xl),
-              SecondaryButton(
-                label: AppStrings.logout,
-                leadingIcon: Icons.logout,
-                foreground: AppColors.danger,
-                borderColor: AppColors.danger.withValues(alpha: 0.4),
-                onPressed: _logout,
               ),
             ],
           );
@@ -314,21 +387,29 @@ class _PremiumPromoBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(AppSpacing.md),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [AppColors.amber, AppColors.accent],
+          gradient: LinearGradient(
+            colors: isDark
+                ? [const Color(0xFF1B2321), const Color(0xFF0F1513)]
+                : [const Color(0xFFE6F4EE), const Color(0xFFD3EBE1)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(AppRadius.lg),
+          border: Border.all(
+            color: AppColors.amber.withValues(alpha: 0.35),
+            width: 1.5,
+          ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.amber.withValues(alpha: 0.25),
-              blurRadius: 10,
+              color: AppColors.amber.withValues(alpha: isDark ? 0.15 : 0.08),
+              blurRadius: 15,
+              spreadRadius: 1,
               offset: const Offset(0, 4),
             ),
           ],
@@ -336,38 +417,55 @@ class _PremiumPromoBanner extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(
-                color: Colors.white24,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFFD700), Color(0xFFFFA000), AppColors.amber],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.amber.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              child: const Icon(Icons.star, color: Colors.white, size: 22),
+              child: const Icon(Icons.workspace_premium_rounded, color: Colors.white, size: 24),
             ),
-            const SizedBox(width: AppSpacing.md),
-            const Expanded(
+            const SizedBox(width: AppSpacing.md + 2),
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     "VetUz Premium-ga o'ting",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
+                    style: AppTextStyles.title.copyWith(
+                      color: isDark ? Colors.white : AppColors.textPrimary,
                       fontWeight: FontWeight.bold,
+                      fontSize: 16,
                     ),
                   ),
-                  SizedBox(height: 2),
+                  const SizedBox(height: 3),
                   Text(
-                    "Cheksiz AI va maxsus chegirmalar",
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 12,
+                    "Cheksiz AI yordami va veterinarlar uchun maxsus chegirmalar",
+                    style: AppTextStyles.caption.copyWith(
+                      color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                     ),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: Colors.white),
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: AppColors.amber.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.chevron_right, color: AppColors.amber, size: 20),
+            ),
           ],
         ),
       ),

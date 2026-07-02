@@ -92,4 +92,14 @@ class PreferencesService {
       await _prefs.setString(_kProfileAvatar, avatar);
     }
   }
+
+  // ---- Gemini API Key ----
+  String? get geminiApiKey => _prefs.getString('gemini_api_key');
+  Future<void> setGeminiApiKey(String? key) async {
+    if (key == null || key.isEmpty) {
+      await _prefs.remove('gemini_api_key');
+    } else {
+      await _prefs.setString('gemini_api_key', key);
+    }
+  }
 }

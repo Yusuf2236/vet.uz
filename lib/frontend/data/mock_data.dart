@@ -231,36 +231,43 @@ class MockData {
   static const List<ProfileMenuItem> profileMenu = [
     ProfileMenuItem(
       label: AppStrings.myAnimals,
+      subtitle: 'Chorva va uy hayvonlari ro\'yxati',
       icon: Icons.favorite_outline,
       color: AppColors.pink,
       tint: AppColors.pinkTint,
     ),
     ProfileMenuItem(
       label: AppStrings.farmManagement,
+      subtitle: 'Sut, go\'sht va ozuqa tahlillari',
       icon: Icons.eco_outlined,
       color: AppColors.green,
       tint: AppColors.greenTint,
     ),
     ProfileMenuItem(
       label: AppStrings.orders,
+      subtitle: 'Xaridlar va buyurtmalar tarixi',
       icon: Icons.shopping_cart_outlined,
       color: AppColors.amber,
       tint: AppColors.amberTint,
     ),
     ProfileMenuItem(
       label: AppStrings.aiAssistant,
+      subtitle: 'Sun\'iy intellekt tezkor tashxisi',
       icon: Icons.smart_toy_outlined,
       color: AppColors.purple,
       tint: AppColors.purpleTint,
+      badgeText: 'AI',
     ),
     ProfileMenuItem(
       label: AppStrings.settings,
+      subtitle: 'Tizim va xavfsizlik sozlamalari',
       icon: Icons.settings_outlined,
       color: AppColors.grey,
       tint: AppColors.greyTint,
     ),
     ProfileMenuItem(
       label: AppStrings.helpCenter,
+      subtitle: 'FAQ va mijozlarni qo\'llab-quvvatlash',
       icon: Icons.help_outline,
       color: AppColors.blue,
       tint: AppColors.blueTint,
