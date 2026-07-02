@@ -25,7 +25,9 @@ create table if not exists public.vets (
   price_som integer not null default 0,
   is_available boolean not null default true,
   district text not null default '',
-  animal_type text not null default ''
+  animal_type text not null default '',
+  latitude numeric(9, 6),
+  longitude numeric(9, 6)
 );
 
 create table if not exists public.products (
@@ -90,15 +92,15 @@ create policy "own orders insert" on public.orders
   for insert with check (auth.uid() = user_id);
 
 -- ---------- Seed: Veterinarlar ----------
-insert into public.vets (name, specialty, rating, distance_km, price_som, is_available, district, animal_type) values
-  ('Dr. Bobur Karimov', 'Umumiy terapevt (uy hayvonlari)', 4.8, 2.1, 80000, true, 'Mirobod', 'It / mushuk'),
-  ('Dr. Dilnoza Yusupova', 'Veterinar jarroh', 4.9, 4.5, 150000, true, 'Yunusobod', 'It / mushuk'),
-  ('Dr. Otabek Ismoilov', 'Yirik chorva mutaxassisi', 4.7, 9.3, 200000, true, 'Sergeli', 'Sigir / qoramol'),
-  ('Dr. Sardor Toxtayev', 'Dermatolog (teri kasalliklari)', 4.6, 3.2, 100000, true, 'Chilonzor', 'It / mushuk'),
-  ('Dr. Malika Sodiqova', 'Akusher-ginekolog (chorva)', 4.6, 11.2, 180000, false, 'Bektemir', 'Sigir / qo''y'),
-  ('Dr. Aziza Mirzayeva', 'Ornitolog (qush / parranda)', 4.4, 6.4, 90000, true, 'Yashnobod', 'Qush / to''tiqush'),
-  ('Dr. Rustam Qodirov', '24/7 favqulodda yordam', 4.8, 4.0, 160000, true, 'Uchtepa', 'It / mushuk'),
-  ('Dr. Gulnora Hamidova', 'Emlash va profilaktika', 4.6, 7.0, 70000, true, 'Olmazor', 'It / mushuk');
+insert into public.vets (name, specialty, rating, distance_km, price_som, is_available, district, animal_type, latitude, longitude) values
+  ('Dr. Bobur Karimov', 'Umumiy terapevt (uy hayvonlari)', 4.8, 2.1, 80000, true, 'Mirobod', 'It / mushuk', 41.3002, 69.2523),
+  ('Dr. Dilnoza Yusupova', 'Veterinar jarroh', 4.9, 4.5, 150000, true, 'Yunusobod', 'It / mushuk', 41.3524, 69.2152),
+  ('Dr. Otabek Ismoilov', 'Yirik chorva mutaxassisi', 4.7, 9.3, 200000, true, 'Sergeli', 'Sigir / qoramol', 41.2856, 69.1983),
+  ('Dr. Sardor Toxtayev', 'Dermatolog (teri kasalliklari)', 4.6, 3.2, 100000, true, 'Chilonzor', 'It / mushuk', 41.2294, 69.2012),
+  ('Dr. Malika Sodiqova', 'Akusher-ginekolog (chorva)', 4.6, 11.2, 180000, false, 'Bektemir', 'Sigir / qo''y', 41.2985, 69.2241),
+  ('Dr. Aziza Mirzayeva', 'Ornitolog (qush / parranda)', 4.4, 6.4, 90000, true, 'Yashnobod', 'Qush / to''tiqush', 41.3412, 69.2983),
+  ('Dr. Rustam Qodirov', '24/7 favqulodda yordam', 4.8, 4.0, 160000, true, 'Uchtepa', 'It / mushuk', 41.3112, 69.2612),
+  ('Dr. Gulnora Hamidova', 'Emlash va profilaktika', 4.6, 7.0, 70000, true, 'Olmazor', 'It / mushuk', 41.3195, 69.2452);
 
 -- ---------- Seed: Mahsulotlar ----------
 insert into public.products (name, category, price_som, old_price_som, rating) values

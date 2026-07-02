@@ -142,6 +142,30 @@ class AppStrings {
   static const String logout = 'Chiqish';
   static const String cancel = 'Bekor';
   static const String logoutConfirm = 'Hisobingizdan chiqmoqchimisiz?';
+  static const String logoutSubtitle = 'Hisobdan xavfsiz chiqish';
+  static const String guestSignInTitle = 'Tizimga kiring';
+  static const String guestSignInBody = 'Chorva mollaringizni boshqarish, buyurtmalar tarixi va shaxsiy tavsiyalardan foydalanish uchun tizimga kiring.';
+  static const String loginOrRegister = 'Kirish yoki Ro\'yxatdan o\'tish';
+  static const String ratingSystemTitle = 'Reyting tizimi';
+  static const String ratingSystemBody = 'Ushbu ko\'rsatkich sizning platformadagi faolligingiz, veterinarlar bilan bo\'lgan muloqotlaringiz va buyurtmalaringiz asosida avtomatik hisoblab chiqiladi.';
+  static const String ratingSystemValue = 'Sizning joriy reytingingiz';
+  static const String understood = 'Tushunarli';
+  static const String upgradeToPremium = 'VetUz Premium-ga o\'ting';
+  static const String premiumBenefitsSummary = 'Cheksiz AI yordami va veterinarlar uchun maxsus chegirmalar';
+  static const String subscribeToPremium = 'VetUz Premium-ga obuna bo\'lish';
+  static const String premiumDescription = 'Ilovadan to\'liq va cheksiz foydalanish imkoniyati';
+  static const String benefitAiTitle = 'Cheksiz VetAI maslahatlari';
+  static const String benefitAiDesc = 'Tashxislar va tavsiyalar cheklovlarsiz';
+  static const String benefitDiscountTitle = 'Veterinarlar ko\'rigiga chegirma';
+  static const String benefitDiscountDesc = 'Har bir chaqiruvda 10% gacha keshbek';
+  static const String benefitFarmTitle = 'Smart Ferma tahlillari';
+  static const String benefitFarmDesc = 'Mollarning og\'irlik grafiklari va hisobotlar';
+  static const String monthlySubscription = 'Oylik obuna';
+  static const String monthlyPrice = '29,000 so\'m / oy';
+  static const String yearlySubscription = 'Yillik obuna';
+  static const String yearlyPrice = '249,000 so\'m / yil';
+  static const String savingsBadge = 'TEJAMKOR -30%';
+  static const String upgradeButtonLabel = 'Premium-ga o\'tish';
 
   // ---- Market ----
   static const String marketTitle = 'Marketplace';

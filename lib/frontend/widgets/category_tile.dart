@@ -14,7 +14,7 @@ class CategoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final surface = Theme.of(context).cardColor;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = Theme.of(context).textTheme.bodyMedium?.color;
 
     return Pressable(
@@ -24,21 +24,27 @@ class CategoryTile extends StatelessWidget {
           Container(
             height: 60,
             decoration: BoxDecoration(
-              color: surface,
+              color: isDark
+                  ? item.color.withValues(alpha: 0.08)
+                  : item.tint.withValues(alpha: 0.55),
               borderRadius: BorderRadius.circular(AppRadius.lg),
               border: Border.all(
-                color: Theme.of(context).dividerColor.withValues(alpha: 0.6),
+                color: item.color.withValues(alpha: isDark ? 0.22 : 0.12),
+                width: 1.2,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: item.color.withValues(alpha: isDark ? 0.04 : 0.08),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: Center(
-              child: Container(
-                width: 38,
-                height: 38,
-                decoration: BoxDecoration(
-                  color: item.tint,
-                  borderRadius: BorderRadius.circular(AppRadius.md),
-                ),
-                child: Icon(item.icon, color: item.color, size: 20),
+              child: Icon(
+                item.icon,
+                color: isDark ? item.color.withValues(alpha: 0.95) : item.color,
+                size: 24,
               ),
             ),
           ),
@@ -47,10 +53,15 @@ class CategoryTile extends StatelessWidget {
             item.label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.caption.copyWith(color: textColor),
+            style: AppTextStyles.caption.copyWith(
+              color: textColor,
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
+            ),
           ),
         ],
       ),
     );
   }
 }
+

@@ -27,13 +27,22 @@ class _MarketScreenState extends State<MarketScreen> {
   final ProductRepository _repo = ProductRepository();
   late Stream<List<Product>> _stream = _repo.watchProducts();
   int _filter = 0;
+  String _query = '';
 
   void _reload() => setState(() => _stream = _repo.watchProducts());
 
   List<Product> _visible(List<Product> all) {
+    var list = all;
+    if (_query.isNotEmpty) {
+      list = list
+          .where((p) =>
+              p.name.toLowerCase().contains(_query) ||
+              p.category.toLowerCase().contains(_query))
+          .toList();
+    }
     final category = MockData.marketCategories[_filter];
-    if (category == 'Hammasi') return all;
-    return all.where((p) => p.category == category).toList();
+    if (category == 'Hammasi') return list;
+    return list.where((p) => p.category == category).toList();
   }
 
   void _addToCart(Product p) {
@@ -124,7 +133,14 @@ class _MarketScreenState extends State<MarketScreen> {
             ],
           ),
           const SizedBox(height: AppSpacing.lg),
-          const SearchField(hint: AppStrings.searchHint),
+          SearchField(
+            hint: AppStrings.searchHint,
+            onChanged: (val) {
+              setState(() {
+                _query = val.trim().toLowerCase();
+              });
+            },
+          ),
           const SizedBox(height: AppSpacing.lg),
           FilterChips(
             items: MockData.marketCategories,

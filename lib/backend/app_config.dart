@@ -52,4 +52,13 @@ class AppConfig {
   );
 
   static bool get useBackendAuth => useBackend && _backendAuthFlag;
+
+  /// Sun'iy intellekt (Gemini API) kaliti.
+  /// Loyihani ishga tushirishda berish mumkin:
+  ///   flutter run --dart-define=GEMINI_API_KEY=AIzaSy...
+  static const String geminiApiKey = String.fromEnvironment(
+    'GEMINI_API_KEY',
+    defaultValue: '',
+  );
 }
+

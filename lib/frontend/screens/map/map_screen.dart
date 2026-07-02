@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../../backend/repositories/vet_repository.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
@@ -21,7 +22,34 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   final MapController _mapController = MapController();
   final LatLng _tashkentCenter = const LatLng(41.311081, 69.240562);
+  List<Veterinarian> _vets = [];
+  bool _isLoading = true;
   Veterinarian? _selectedVet;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadVets();
+  }
+
+  Future<void> _loadVets() async {
+    try {
+      final data = await VetRepository().fetchVets();
+      if (mounted) {
+        setState(() {
+          _vets = data;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _vets = MockData.vets;
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   void _onVetTap(Veterinarian vet) {
     setState(() {
@@ -42,7 +70,7 @@ class _MapScreenState extends State<MapScreen> {
         : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
 
     // Shifokorlar markerlarini yasash
-    final markers = MockData.vets
+    final markers = _vets
         .where((v) => v.latitude != null && v.longitude != null)
         .map((vet) {
       final isSelected = _selectedVet?.name == vet.name;
@@ -234,24 +262,40 @@ class _MapScreenState extends State<MapScreen> {
                       ),
                     ),
                     const SizedBox(height: AppSpacing.md),
-                    for (final vet in MockData.vets) ...[
-                      GestureDetector(
-                        onTap: () => _onVetTap(vet),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: _selectedVet?.name == vet.name
-                                  ? AppColors.primary
-                                  : Colors.transparent,
-                              width: 1.5,
-                            ),
-                            borderRadius: BorderRadius.circular(AppRadius.lg),
+                    if (_isLoading)
+                      const SizedBox(
+                        height: 120,
+                        child: Center(child: CircularProgressIndicator()),
+                      )
+                    else if (_vets.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
+                        child: Text(
+                          'Yaqin atrofdagi shifokorlar topilmadi',
+                          style: AppTextStyles.body.copyWith(
+                            color: Theme.of(context).textTheme.bodySmall?.color,
                           ),
-                          child: VetCard(vet: vet),
                         ),
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                    ],
+                      )
+                    else
+                      for (final vet in _vets) ...[
+                        GestureDetector(
+                          onTap: () => _onVetTap(vet),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: _selectedVet?.name == vet.name
+                                    ? AppColors.primary
+                                    : Colors.transparent,
+                                width: 1.5,
+                              ),
+                              borderRadius: BorderRadius.circular(AppRadius.lg),
+                            ),
+                            child: VetCard(vet: vet),
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                      ],
                   ],
                 ),
               );

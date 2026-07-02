@@ -471,6 +471,19 @@ class MockData {
       age: '3 yosh',
       health: "Sog'lom",
       icon: Icons.agriculture_outlined,
+      vaccines: [
+        VaccineRecord(name: "Quturishga qarshi emlash", date: "15.05.2026", completed: true),
+        VaccineRecord(name: "Kuydirgiga qarshi emlash", date: "10.06.2026", completed: true),
+        VaccineRecord(name: "Oqsil (Yashchur) vaksina", date: "25.08.2026", completed: false),
+      ],
+      medicalLogs: [
+        MedicalRecord(title: "Profilaktik ko'rik", date: "02.05.2026", note: "Umumiy holati a'lo, ishtahasi joyida."),
+        MedicalRecord(title: "Vitamin terapiya", date: "12.06.2026", note: "Kalsiy va D3 vitamin kompleksi yuborildi."),
+      ],
+      reminders: [
+        ReminderRecord(title: "Kalsiy tabletkasi", time: "08:00", period: "Har kuni"),
+        ReminderRecord(title: "Veterinar ko'rigi", time: "10:00", period: "Har oyning 1-kuni"),
+      ],
     ),
     Animal(
       name: 'Boychibor',
@@ -480,6 +493,16 @@ class MockData {
       health: 'Kuzatuvda',
       healthy: false,
       icon: Icons.agriculture_outlined,
+      vaccines: [
+        VaccineRecord(name: "Quturishga qarshi emlash", date: "02.04.2026", completed: true),
+        VaccineRecord(name: "Brutsellyozga qarshi", date: "18.09.2026", completed: false),
+      ],
+      medicalLogs: [
+        MedicalRecord(title: "Mastit tekshiruvi", date: "22.06.2026", note: "Yengil mastit belgilari, maxsus malham buyurildi."),
+      ],
+      reminders: [
+        ReminderRecord(title: "Mastit dori surtish", time: "18:00", period: "Har kuni (3 kun)"),
+      ],
     ),
     Animal(
       name: 'Olapar',
@@ -489,6 +512,16 @@ class MockData {
       health: 'Emlash kerak',
       healthy: false,
       icon: Icons.pets_outlined,
+      vaccines: [
+        VaccineRecord(name: "Gelmintizatsiya", date: "01.03.2026", completed: true),
+        VaccineRecord(name: "Kompleks vaksina (DHPPI)", date: "10.07.2026", completed: false),
+      ],
+      medicalLogs: [
+        MedicalRecord(title: "Panja jarohati", date: "15.04.2026", note: "Tikan kirgan, tozalandi va antiseptik qo'yildi."),
+      ],
+      reminders: [
+        ReminderRecord(title: "Gelmint dori berish", time: "09:00", period: "Har 3 oyda"),
+      ],
     ),
     Animal(
       name: 'Mosh',
@@ -497,6 +530,15 @@ class MockData {
       age: '1 yosh',
       health: "Sog'lom",
       icon: Icons.pets_outlined,
+      vaccines: [
+        VaccineRecord(name: "Quturishga qarshi", date: "20.02.2026", completed: true),
+      ],
+      medicalLogs: [
+        MedicalRecord(title: "Sterilizatsiya", date: "05.01.2026", note: "Operatsiya muvaffaqiyatli o'tdi, choklar olindi."),
+      ],
+      reminders: [
+        ReminderRecord(title: "Tuk tozalash", time: "17:00", period: "Har haftada"),
+      ],
     ),
     Animal(
       name: 'Patila',
@@ -505,6 +547,11 @@ class MockData {
       age: '8 oy',
       health: "Sog'lom",
       icon: Icons.egg_outlined,
+      vaccines: [
+        VaccineRecord(name: "Nyukasl kasalligiga qarshi", date: "12.01.2026", completed: true),
+      ],
+      medicalLogs: [],
+      reminders: [],
     ),
   ];
 

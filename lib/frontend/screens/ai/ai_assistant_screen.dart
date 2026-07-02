@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../backend/app_config.dart';
 import '../../../backend/repositories/ai_repository.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/services/preferences_service.dart';
@@ -109,7 +110,9 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
     });
     _scrollToBottom();
 
-    final apiKey = PreferencesService.instance.geminiApiKey ?? '';
+    final apiKey = (PreferencesService.instance.geminiApiKey ?? '').isNotEmpty
+        ? PreferencesService.instance.geminiApiKey!
+        : AppConfig.geminiApiKey;
     if (apiKey.isEmpty) {
       // Offline mock match mode
       final match = _match(text);
@@ -244,7 +247,9 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
   }
 
   Widget _buildApiKeyBanner() {
-    final apiKey = PreferencesService.instance.geminiApiKey ?? '';
+    final apiKey = (PreferencesService.instance.geminiApiKey ?? '').isNotEmpty
+        ? PreferencesService.instance.geminiApiKey!
+        : AppConfig.geminiApiKey;
     if (apiKey.isNotEmpty) return const SizedBox.shrink();
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -288,7 +293,9 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final apiKey = PreferencesService.instance.geminiApiKey ?? '';
+    final apiKey = (PreferencesService.instance.geminiApiKey ?? '').isNotEmpty
+        ? PreferencesService.instance.geminiApiKey!
+        : AppConfig.geminiApiKey;
 
     return Scaffold(
       appBar: AppBar(

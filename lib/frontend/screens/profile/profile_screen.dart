@@ -140,18 +140,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: AppSpacing.xl),
                     Text(
-                      "Tizimga kiring",
+                      AppStrings.guestSignInTitle,
                       style: AppTextStyles.h1.copyWith(color: titleColor),
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     Text(
-                      "Chorva mollaringizni boshqarish, buyurtmalar tarixi va shaxsiy tavsiyalardan foydalanish uchun tizimga kiring.",
+                      AppStrings.guestSignInBody,
                       textAlign: TextAlign.center,
                       style: AppTextStyles.body.copyWith(color: secondary),
                     ),
                     const SizedBox(height: AppSpacing.xxl),
                     PrimaryButton(
-                      label: "Kirish yoki Ro'yxatdan o'tish",
+                      label: AppStrings.loginOrRegister,
                       onPressed: () async {
                         final ok = await Navigator.of(context).pushNamed(AppRoutes.login);
                         if (ok == true) {
@@ -182,7 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             const Icon(Icons.star_rounded, color: AppColors.amber, size: 28),
             const SizedBox(width: AppSpacing.sm),
-            Text("Reyting tizimi", style: AppTextStyles.h3),
+            Text(AppStrings.ratingSystemTitle, style: AppTextStyles.h3),
           ],
         ),
         content: Column(
@@ -190,12 +190,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Sizning joriy reytingingiz: $rating",
+              "${AppStrings.ratingSystemValue}: $rating",
               style: AppTextStyles.bodyStrong,
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              "Ushbu ko'rsatkich sizning platformadagi faolligingiz, veterinarlar bilan bo'lgan muloqotlaringiz va buyurtmalaringiz asosida avtomatik hisoblab chiqiladi.",
+              AppStrings.ratingSystemBody,
               style: AppTextStyles.body.copyWith(
                 color: Theme.of(ctx).textTheme.bodySmall?.color,
               ),
@@ -205,7 +205,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text("Tushunarli", style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+            child: const Text(AppStrings.understood, style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -340,7 +340,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ProfileMenuTile(
                       item: const ProfileMenuItem(
                         label: AppStrings.logout,
-                        subtitle: 'Hisobdan xavfsiz chiqish',
+                        subtitle: AppStrings.logoutSubtitle,
                         icon: Icons.logout_rounded,
                         color: AppColors.danger,
                         tint: AppColors.redTint,
@@ -441,7 +441,7 @@ class _PremiumPromoBanner extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "VetUz Premium-ga o'ting",
+                    AppStrings.upgradeToPremium,
                     style: AppTextStyles.title.copyWith(
                       color: isDark ? Colors.white : AppColors.textPrimary,
                       fontWeight: FontWeight.bold,
@@ -450,7 +450,7 @@ class _PremiumPromoBanner extends StatelessWidget {
                   ),
                   const SizedBox(height: 3),
                   Text(
-                    "Cheksiz AI yordami va veterinarlar uchun maxsus chegirmalar",
+                    AppStrings.premiumBenefitsSummary,
                     style: AppTextStyles.caption.copyWith(
                       color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                     ),
@@ -509,12 +509,12 @@ class _PaywallSheetState extends State<_PaywallSheet> {
             ),
             const SizedBox(height: AppSpacing.lg),
             Text(
-              "VetUz Premium-ga obuna bo'lish",
+              AppStrings.subscribeToPremium,
               style: AppTextStyles.h2.copyWith(color: titleColor),
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              "Ilovadan to'liq va cheksiz foydalanish imkoniyati",
+              AppStrings.premiumDescription,
               style: AppTextStyles.body.copyWith(color: secondary),
             ),
             const SizedBox(height: AppSpacing.xl),
@@ -522,42 +522,42 @@ class _PaywallSheetState extends State<_PaywallSheet> {
             // Afzalliklar ro'yxati
             _BenefitRow(
               icon: Icons.psychology_outlined,
-              title: "Cheksiz VetAI maslahatlari",
-              desc: "Tashxislar va tavsiyalar cheklovlarsiz",
+              title: AppStrings.benefitAiTitle,
+              desc: AppStrings.benefitAiDesc,
             ),
             const SizedBox(height: AppSpacing.md),
             _BenefitRow(
               icon: Icons.percent_outlined,
-              title: "Veterinarlar ko'rigiga chegirma",
-              desc: "Har bir chaqiruvda 10% gacha keshbek",
+              title: AppStrings.benefitDiscountTitle,
+              desc: AppStrings.benefitDiscountDesc,
             ),
             const SizedBox(height: AppSpacing.md),
             _BenefitRow(
               icon: Icons.analytics_outlined,
-              title: "Smart Ferma tahlillari",
-              desc: "Mollarning og'irlik grafiklari va hisobotlar",
+              title: AppStrings.benefitFarmTitle,
+              desc: AppStrings.benefitFarmDesc,
             ),
             const SizedBox(height: AppSpacing.xl),
 
             // Planlar
             _PlanCard(
-              title: "Oylik obuna",
-              price: "29,000 so'm / oy",
+              title: AppStrings.monthlySubscription,
+              price: AppStrings.monthlyPrice,
               active: _selectedPlan == 0,
               onTap: () => setState(() => _selectedPlan = 0),
             ),
             const SizedBox(height: AppSpacing.md),
             _PlanCard(
-              title: "Yillik obuna",
-              price: "249,000 so'm / yil",
-              badge: "TEJAMKOR -30%",
+              title: AppStrings.yearlySubscription,
+              price: AppStrings.yearlyPrice,
+              badge: AppStrings.savingsBadge,
               active: _selectedPlan == 1,
               onTap: () => setState(() => _selectedPlan = 1),
             ),
             const SizedBox(height: AppSpacing.xl),
 
             PrimaryButton(
-              label: "Premium-ga o'tish",
+              label: AppStrings.upgradeButtonLabel,
               onPressed: widget.onUpgrade,
             ),
           ],

@@ -159,22 +159,16 @@ class _SearchScreenState extends State<SearchScreen> {
             onChanged: _onChanged,
           ),
           const SizedBox(height: AppSpacing.xl),
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            switchInCurve: Curves.easeOut,
-            switchOutCurve: Curves.easeIn,
-            child: hasQuery
-                ? Column(
-                    key: const ValueKey('results'),
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: _results(),
-                  )
-                : Column(
-                    key: const ValueKey('suggestions'),
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: _suggestions(),
-                  ),
-          ),
+          if (hasQuery)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: _results(),
+            )
+          else
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: _suggestions(),
+            ),
         ],
       ),
     );

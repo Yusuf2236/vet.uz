@@ -26,29 +26,55 @@ class SearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final fill = Theme.of(context).inputDecorationTheme.fillColor;
-    return TextField(
-      controller: controller,
-      readOnly: readOnly,
-      autofocus: autofocus,
-      onTap: onTap,
-      onChanged: onChanged,
-      style: AppTextStyles.body.copyWith(
-        color: Theme.of(context).textTheme.bodyMedium?.color,
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
-      decoration: InputDecoration(
-        hintText: hint,
-        prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
-        filled: true,
-        fillColor: fill,
-        contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          borderSide: BorderSide.none,
+      child: TextField(
+        controller: controller,
+        readOnly: readOnly,
+        autofocus: autofocus,
+        onTap: onTap,
+        onChanged: onChanged,
+        style: AppTextStyles.body.copyWith(
+          color: Theme.of(context).textTheme.bodyMedium?.color,
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          borderSide: BorderSide.none,
+        decoration: InputDecoration(
+          hintText: hint,
+          prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
+          filled: true,
+          fillColor: fill,
+          contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            borderSide: BorderSide(
+              color: isDark ? AppColors.darkDivider : AppColors.divider,
+              width: 1,
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            borderSide: BorderSide(
+              color: isDark ? AppColors.darkDivider.withValues(alpha: 0.5) : AppColors.divider.withValues(alpha: 0.5),
+              width: 1,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            borderSide: const BorderSide(
+              color: AppColors.primary,
+              width: 1.4,
+            ),
+          ),
         ),
       ),
     );

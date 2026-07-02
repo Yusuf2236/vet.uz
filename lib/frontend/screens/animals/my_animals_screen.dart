@@ -6,7 +6,9 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../data/mock_data.dart';
 import '../../models/animal.dart';
+import '../../widgets/pressable.dart';
 import 'add_animal_screen.dart';
+import 'animal_passport_screen.dart';
 
 /// Mening hayvonlarim — foydalanuvchi hayvonlari ro'yxati (qo'shish bilan).
 class MyAnimalsScreen extends StatefulWidget {
@@ -49,7 +51,16 @@ class _MyAnimalsScreenState extends State<MyAnimalsScreen> {
         padding: const EdgeInsets.all(AppSpacing.screenH),
         itemCount: _animals.length,
         separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
-        itemBuilder: (context, i) => _AnimalCard(animal: _animals[i]),
+        itemBuilder: (context, i) => _AnimalCard(
+          animal: _animals[i],
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => AnimalPassportScreen(animal: _animals[i]),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -57,7 +68,8 @@ class _MyAnimalsScreenState extends State<MyAnimalsScreen> {
 
 class _AnimalCard extends StatelessWidget {
   final Animal animal;
-  const _AnimalCard({required this.animal});
+  final VoidCallback? onTap;
+  const _AnimalCard({required this.animal, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -68,57 +80,60 @@ class _AnimalCard extends StatelessWidget {
         ? (isDark ? AppColors.primaryLight : AppColors.success)
         : AppColors.warning;
 
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: Theme.of(context).dividerColor),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 52,
-            height: 52,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(AppRadius.md),
+    return Pressable(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          border: Border.all(color: Theme.of(context).dividerColor),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppRadius.md),
+              ),
+              child: Icon(animal.icon, color: AppColors.primary),
             ),
-            child: Icon(animal.icon, color: AppColors.primary),
-          ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  animal.name,
-                  style: AppTextStyles.title.copyWith(color: titleColor),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '${animal.type} · ${animal.breed} · ${animal.age}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.caption.copyWith(color: secondary),
-                ),
-              ],
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    animal.name,
+                    style: AppTextStyles.title.copyWith(color: titleColor),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${animal.type} · ${animal.breed} · ${animal.age}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.caption.copyWith(color: secondary),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: AppSpacing.sm),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: statusColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(AppRadius.pill),
+            const SizedBox(width: AppSpacing.sm),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: statusColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(AppRadius.pill),
+              ),
+              child: Text(
+                animal.health,
+                style: AppTextStyles.label.copyWith(color: statusColor),
+              ),
             ),
-            child: Text(
-              animal.health,
-              style: AppTextStyles.label.copyWith(color: statusColor),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
