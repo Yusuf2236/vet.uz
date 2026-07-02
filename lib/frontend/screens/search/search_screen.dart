@@ -16,7 +16,15 @@ import '../../widgets/section_header.dart';
 import '../../widgets/vet_card.dart';
 import '../home/widgets/category_grid.dart';
 
-/// Qidiruv ekrani — jonli filtr (veterinar, mahsulot, kategoriya).
+// Import navigation targets for professional category routing
+import '../clinic/clinic_list_screen.dart';
+import '../market/category_products_screen.dart';
+import '../more/more_services_screen.dart';
+import '../vet/vet_detail_screen.dart';
+import '../vet/vet_list_screen.dart';
+import '../ai/ai_assistant_screen.dart';
+
+/// Qidiruv ekrani — jonli filtr (veterinar, mahsulot, kategoriya) va premium animatsiyalar.
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
 
@@ -28,13 +36,14 @@ class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _controller = TextEditingController();
   String _query = '';
 
-  // Repository'dan yuklangan real ma'lumot (Supabase yoki MockData).
   List<Veterinarian> _allVets = MockData.vets;
   List<Product> _allProducts = MockData.products;
+  List<String> _recentSearches = [];
 
   @override
   void initState() {
     super.initState();
+    _recentSearches = List.from(MockData.recentSearches);
     VetRepository().fetchVets().then((v) {
       if (mounted) setState(() => _allVets = v);
     });
@@ -51,6 +60,50 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void _onChanged(String value) {
     setState(() => _query = value.trim().toLowerCase());
+  }
+
+  void _push(Widget screen) {
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => screen));
+  }
+
+  void _onCategory(CategoryItem item) {
+    switch (item.label) {
+      case 'Veterinar':
+        _push(const VetListScreen(title: 'Veterinarlar'));
+      case 'Klinika':
+        _push(const ClinicListScreen());
+      case 'Chorva':
+        _push(
+          VetListScreen(
+            title: 'Chorva mutaxassislari',
+            filter: (v) => v.animalType.contains('Sigir'),
+          ),
+        );
+      case 'Dorixona':
+        _push(
+          const CategoryProductsScreen(
+            title: 'Dorixona',
+            allowed: {'Dorilar', 'Vitaminlar'},
+          ),
+        );
+      case 'Pet Shop':
+        _push(
+          const CategoryProductsScreen(
+            title: 'Pet Shop',
+            allowed: {'Oziq-ovqat', 'Jihozlar'},
+          ),
+        );
+      case 'Market':
+        _push(const CategoryProductsScreen(title: 'Barcha mahsulotlar'));
+      case 'AI':
+        _push(const AiAssistantScreen());
+      default:
+        _push(const MoreServicesScreen());
+    }
+  }
+
+  void _openVet(Veterinarian vet) {
+    _push(VetDetailScreen(vet: vet));
   }
 
   List<Veterinarian> get _vets => _query.isEmpty
@@ -106,7 +159,22 @@ class _SearchScreenState extends State<SearchScreen> {
             onChanged: _onChanged,
           ),
           const SizedBox(height: AppSpacing.xl),
-          if (hasQuery) ..._results() else ..._suggestions(),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            switchInCurve: Curves.easeOut,
+            switchOutCurve: Curves.easeIn,
+            child: hasQuery
+                ? Column(
+                    key: const ValueKey('results'),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: _results(),
+                  )
+                : Column(
+                    key: const ValueKey('suggestions'),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: _suggestions(),
+                  ),
+          ),
         ],
       ),
     );
@@ -127,14 +195,14 @@ class _SearchScreenState extends State<SearchScreen> {
       if (categories.isNotEmpty) ...[
         SectionHeader(title: AppStrings.categories),
         const SizedBox(height: AppSpacing.md),
-        CategoryGrid(items: categories),
+        CategoryGrid(items: categories, onTap: _onCategory),
         const SizedBox(height: AppSpacing.xl),
       ],
       if (vets.isNotEmpty) ...[
         SectionHeader(title: AppStrings.nearbyVets),
         const SizedBox(height: AppSpacing.md),
         for (final v in vets) ...[
-          VetCard(vet: v),
+          VetCard(vet: v, onTap: () => _openVet(v)),
           const SizedBox(height: AppSpacing.md),
         ],
         const SizedBox(height: AppSpacing.sm),
@@ -150,111 +218,365 @@ class _SearchScreenState extends State<SearchScreen> {
   // ---- Bo'sh holatdagi takliflar ----
   List<Widget> _suggestions() {
     return [
-      SectionHeader(title: AppStrings.recentSearches),
-      const SizedBox(height: AppSpacing.md),
-      Wrap(
-        spacing: AppSpacing.sm,
-        runSpacing: AppSpacing.sm,
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          for (final q in MockData.recentSearches)
-            _RecentChip(
-              label: q,
-              onTap: () {
-                _controller.text = q;
-                _onChanged(q);
+          SectionHeader(title: AppStrings.recentSearches),
+          if (_recentSearches.isNotEmpty)
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _recentSearches.clear();
+                });
               },
+              child: const Text(
+                "Tozalash",
+                style: TextStyle(
+                  color: AppColors.danger,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
         ],
       ),
+      const SizedBox(height: AppSpacing.md),
+      if (_recentSearches.isEmpty)
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+          child: Text(
+            "So'nggi qidiruvlar mavjud emas",
+            style: AppTextStyles.caption.copyWith(
+              color: Theme.of(context).textTheme.bodySmall?.color,
+            ),
+          ),
+        )
+      else
+        Wrap(
+          spacing: AppSpacing.sm,
+          runSpacing: AppSpacing.sm,
+          children: [
+            for (final q in _recentSearches)
+              _AnimatedRecentChip(
+                label: q,
+                onTap: () {
+                  _controller.text = q;
+                  _onChanged(q);
+                },
+                onDelete: () {
+                  setState(() {
+                    _recentSearches.remove(q);
+                  });
+                },
+              ),
+          ],
+        ),
       const SizedBox(height: AppSpacing.xxl),
       SectionHeader(title: AppStrings.popularCategories),
       const SizedBox(height: AppSpacing.md),
-      CategoryGrid(items: MockData.categories),
+      CategoryGrid(items: MockData.categories, onTap: _onCategory),
     ];
   }
 }
 
-class _RecentChip extends StatelessWidget {
+class _AnimatedRecentChip extends StatefulWidget {
   final String label;
   final VoidCallback onTap;
-  const _RecentChip({required this.label, required this.onTap});
+  final VoidCallback onDelete;
+
+  const _AnimatedRecentChip({
+    required this.label,
+    required this.onTap,
+    required this.onDelete,
+  });
+
+  @override
+  State<_AnimatedRecentChip> createState() => _AnimatedRecentChipState();
+}
+
+class _AnimatedRecentChipState extends State<_AnimatedRecentChip> {
+  double _scale = 1.0;
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final color = Theme.of(context).textTheme.bodyMedium?.color;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(AppRadius.pill),
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.sm,
-        ),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(AppRadius.pill),
-          border: Border.all(color: Theme.of(context).dividerColor),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.history,
-              size: 15,
-              color: Theme.of(context).textTheme.bodySmall?.color,
+
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _scale = 0.94),
+      onTapUp: (_) => setState(() => _scale = 1.0),
+      onTapCancel: () => setState(() => _scale = 1.0),
+      onTap: widget.onTap,
+      child: AnimatedScale(
+        scale: _scale,
+        duration: const Duration(milliseconds: 100),
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 8,
+          ),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1B2321) : const Color(0xFFF2F9F6),
+            borderRadius: BorderRadius.circular(AppRadius.pill),
+            border: Border.all(
+              color: isDark ? const Color(0xFF283631) : const Color(0xFFDCEFE7),
             ),
-            const SizedBox(width: 6),
-            Text(label, style: AppTextStyles.caption.copyWith(color: color)),
-          ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.history,
+                size: 14,
+                color: isDark ? Colors.white54 : Colors.black45,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                widget.label,
+                style: AppTextStyles.caption.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(width: 6),
+              GestureDetector(
+                onTap: widget.onDelete,
+                child: Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: Icon(
+                    Icons.close_rounded,
+                    size: 14,
+                    color: isDark ? Colors.white30 : Colors.black26,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _ProductTile extends StatelessWidget {
+class _ProductTile extends StatefulWidget {
   final Product product;
   const _ProductTile({required this.product});
+
+  @override
+  State<_ProductTile> createState() => _ProductTileState();
+}
+
+class _ProductTileState extends State<_ProductTile> {
+  double _scale = 1.0;
 
   @override
   Widget build(BuildContext context) {
     final titleColor = Theme.of(context).textTheme.titleMedium?.color;
     final secondary = Theme.of(context).textTheme.bodySmall?.color;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.md),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: product.tint,
-              borderRadius: BorderRadius.circular(AppRadius.md),
-            ),
-            child: Icon(product.icon, color: product.color, size: 20),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _scale = 0.97),
+      onTapUp: (_) => setState(() => _scale = 1.0),
+      onTapCancel: () => setState(() => _scale = 1.0),
+      onTap: () {
+        _showProductDetail(context, widget.product);
+      },
+      child: AnimatedScale(
+        scale: _scale,
+        duration: const Duration(milliseconds: 100),
+        child: Container(
+          margin: const EdgeInsets.only(bottom: AppSpacing.md),
+          padding: const EdgeInsets.all(AppSpacing.md),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.darkSurface : AppColors.surface,
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+            border: Border.all(color: Theme.of(context).dividerColor),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.12 : 0.02),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  product.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.title.copyWith(color: titleColor),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: widget.product.tint,
+                  borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
-                Text(
-                  product.category,
-                  style: AppTextStyles.caption.copyWith(color: secondary),
+                child: Icon(widget.product.icon, color: widget.product.color, size: 22),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      widget.product.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.bodyStrong.copyWith(color: titleColor),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      widget.product.category,
+                      style: AppTextStyles.caption.copyWith(color: secondary),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  PriceText(
+                    amount: widget.product.priceSom,
+                    color: AppColors.primary,
+                    style: AppTextStyles.bodyStrong,
+                  ),
+                  const SizedBox(height: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
+                    ),
+                    child: const Text(
+                      "Ko'rish",
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          PriceText(amount: product.priceSom, color: AppColors.primary),
-        ],
+        ),
       ),
+    );
+  }
+
+  void _showProductDetail(BuildContext context, Product product) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Theme.of(context).cardColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+      ),
+      builder: (ctx) {
+        final titleColor = Theme.of(ctx).textTheme.titleLarge?.color;
+        return Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Theme.of(ctx).dividerColor,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              Row(
+                children: [
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: product.tint,
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                    ),
+                    child: Icon(product.icon, color: product.color, size: 30),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          product.name,
+                          style: AppTextStyles.h2.copyWith(color: titleColor),
+                        ),
+                        Text(
+                          product.category,
+                          style: AppTextStyles.body.copyWith(
+                            color: Theme.of(ctx).textTheme.bodySmall?.color,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              Text(
+                "Tavsif",
+                style: AppTextStyles.bodyStrong.copyWith(color: titleColor),
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                "Ushbu ${product.name.toLowerCase()} chorvachilik va hayvonlarni parvarish qilishda ishlatiladi. Yuqori sifatli va sinovdan o'tgan mahsulot.",
+                style: AppTextStyles.body.copyWith(
+                  color: Theme.of(ctx).textTheme.bodyMedium?.color,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Narxi", style: AppTextStyles.caption),
+                      PriceText(
+                        amount: product.priceSom,
+                        color: AppColors.primary,
+                        style: AppTextStyles.h2,
+                      ),
+                    ],
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("${product.name} savatchaga qo'shildi!")),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.xxl,
+                        vertical: AppSpacing.md,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.lg),
+                      ),
+                    ),
+                    child: const Text(
+                      "Savatchaga qo'shish",
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
