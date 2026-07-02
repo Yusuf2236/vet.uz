@@ -3,6 +3,11 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../animals/my_animals_screen.dart';
+import '../clinic/clinic_list_screen.dart';
+import '../market/market_screen.dart';
+import '../vet/vet_list_screen.dart';
+import '../../widgets/pressable.dart';
 
 /// "Ko'proq" — VetUz qo'shimcha xizmatlari ro'yxati (ma'lumotli).
 class MoreServicesScreen extends StatelessWidget {
@@ -84,44 +89,112 @@ class MoreServicesScreen extends StatelessWidget {
         separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
         itemBuilder: (context, i) {
           final s = _services[i];
-          return Container(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(AppRadius.lg),
-              border: Border.all(color: Theme.of(context).dividerColor),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 46,
-                  height: 46,
-                  decoration: BoxDecoration(
-                    color: s.tint,
-                    borderRadius: BorderRadius.circular(AppRadius.md),
-                  ),
-                  child: Icon(s.icon, color: s.color, size: 22),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        s.title,
-                        style: AppTextStyles.title.copyWith(color: titleColor),
+          return Pressable(
+            onTap: () {
+              switch (s.title) {
+                case "Sun'iy urug'lantirish":
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => VetListScreen(
+                        title: "Sun'iy urug'lantirish",
+                        filter: (v) =>
+                            v.specialty.contains('Yirik chorva') ||
+                            v.animalType.toLowerCase().contains('qoramol'),
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        s.desc,
-                        style: AppTextStyles.caption.copyWith(color: secondary),
+                    ),
+                  );
+                case 'Chorva birkalash':
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => VetListScreen(
+                        title: "Chorva birkalash",
+                        filter: (v) =>
+                            v.animalType.toLowerCase().contains('qoramol') ||
+                            v.specialty.contains('Yirik chorva'),
                       ),
-                    ],
+                    ),
+                  );
+                case 'Statsionar':
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(builder: (_) => const ClinicListScreen()),
+                  );
+                case 'Laboratoriya':
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => VetListScreen(
+                        title: "Laboratoriya",
+                        filter: (v) =>
+                            v.specialty.contains('Diagnostika') ||
+                            v.name.contains('Natalya'),
+                      ),
+                    ),
+                  );
+                case 'Grooming':
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => VetListScreen(
+                        title: "Grooming",
+                        filter: (v) => v.animalType.toLowerCase().contains('it'),
+                      ),
+                    ),
+                  );
+                case 'Uy chaqiruvi':
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const VetListScreen(title: "Uy chaqiruvi"),
+                    ),
+                  );
+                case 'Emlash kalendari':
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(builder: (_) => const MyAnimalsScreen()),
+                  );
+                case 'Yetkazib berish':
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const Scaffold(body: MarketScreen()),
+                    ),
+                  );
+              }
+            },
+            child: Container(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+                border: Border.all(color: Theme.of(context).dividerColor),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      color: s.tint,
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                    ),
+                    child: Icon(s.icon, color: s.color, size: 22),
                   ),
-                ),
-              ],
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          s.title,
+                          style: AppTextStyles.title.copyWith(color: titleColor),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          s.desc,
+                          style: AppTextStyles.caption.copyWith(color: secondary),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },
