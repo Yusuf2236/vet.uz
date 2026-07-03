@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -25,30 +27,47 @@ class _MapScreenState extends State<MapScreen> {
   List<Veterinarian> _vets = [];
   bool _isLoading = true;
   Veterinarian? _selectedVet;
+  StreamSubscription<List<Veterinarian>>? _vetsSubscription;
 
   @override
   void initState() {
     super.initState();
-    _loadVets();
+    _subscribeVets();
   }
 
-  Future<void> _loadVets() async {
-    try {
-      final data = await VetRepository().fetchVets();
-      if (mounted) {
-        setState(() {
-          _vets = data;
-          _isLoading = false;
-        });
-      }
-    } catch (_) {
-      if (mounted) {
-        setState(() {
-          _vets = MockData.vets;
-          _isLoading = false;
-        });
-      }
-    }
+  void _subscribeVets() {
+    _vetsSubscription = VetRepository().watchVets().listen(
+      (data) {
+        if (mounted) {
+          setState(() {
+            _vets = data;
+            _isLoading = false;
+            if (_selectedVet != null) {
+              try {
+                _selectedVet = data.firstWhere((v) => v.name == _selectedVet!.name);
+              } catch (_) {
+                // Ignore if not found
+              }
+            }
+          });
+        }
+      },
+      onError: (err) {
+        if (mounted) {
+          setState(() {
+            _vets = MockData.vets;
+            _isLoading = false;
+          });
+        }
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _vetsSubscription?.cancel();
+    _mapController.dispose();
+    super.dispose();
   }
 
   void _onVetTap(Veterinarian vet) {
@@ -76,16 +95,15 @@ class _MapScreenState extends State<MapScreen> {
       final isSelected = _selectedVet?.name == vet.name;
       return Marker(
         point: LatLng(vet.latitude!, vet.longitude!),
-        width: 120,
-        height: 60,
+        width: 150,
+        height: 75,
         child: GestureDetector(
           onTap: () => _onVetTap(vet),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Pin belgisi va narx/nom
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                 decoration: BoxDecoration(
                   color: isSelected ? AppColors.primary : Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(AppRadius.md),
@@ -101,26 +119,67 @@ class _MapScreenState extends State<MapScreen> {
                     ),
                   ],
                 ),
-                child: Row(
+                child: Column(
                   mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      Icons.medical_services_rounded,
-                      color: isSelected ? Colors.white : AppColors.primary,
-                      size: 12,
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.medical_services_rounded,
+                          color: isSelected ? Colors.white : AppColors.primary,
+                          size: 11,
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            vet.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTextStyles.label.copyWith(
+                              color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyLarge?.color,
+                              fontSize: 9.5,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 2),
+                        Container(
+                          width: 5,
+                          height: 5,
+                          decoration: BoxDecoration(
+                            color: vet.isAvailable ? AppColors.success : AppColors.danger,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 4),
-                    Text(
-                      vet.name.split(' ').last,
-                      style: AppTextStyles.label.copyWith(
-                        color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyLarge?.color,
-                        fontSize: 10,
-                      ),
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.location_on_rounded,
+                          color: isSelected ? Colors.white70 : AppColors.textMuted,
+                          size: 9,
+                        ),
+                        const SizedBox(width: 2),
+                        Expanded(
+                          child: Text(
+                            vet.district,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: isSelected ? Colors.white70 : Theme.of(context).textTheme.bodySmall?.color,
+                              fontSize: 8.5,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-              // Kichik pastki uchburchak pointer
               Icon(
                 Icons.arrow_drop_down_rounded,
                 color: isSelected ? AppColors.primary : AppColors.primary,

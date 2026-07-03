@@ -7,7 +7,7 @@ class DiseaseRepository {
   Future<List<Disease>> fetchDiseases() async {
     if (!SupabaseService.isReady) return MockData.diseases;
     try {
-      final rows = await SupabaseService.client.from('diseases').select();
+      final rows = await SupabaseService.client.from('diseases').select().timeout(const Duration(seconds: 3));
       if (rows.isEmpty) return MockData.diseases;
       return rows.map(Disease.fromJson).toList();
     } catch (_) {

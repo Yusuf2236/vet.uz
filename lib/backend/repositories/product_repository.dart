@@ -13,7 +13,7 @@ class ProductRepository {
   Future<List<Product>> fetchProducts() async {
     if (!SupabaseService.isReady) return MockData.products;
     try {
-      final rows = await SupabaseService.client.from('products').select();
+      final rows = await SupabaseService.client.from('products').select().timeout(const Duration(seconds: 3));
       if (rows.isEmpty) return MockData.products;
       return rows.map(_fromMap).toList();
     } catch (_) {

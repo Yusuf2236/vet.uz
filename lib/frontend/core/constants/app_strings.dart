@@ -88,7 +88,7 @@ class AppStrings {
   static const String greeting = 'Xayrli kun,';
   static const String searchHint = 'Veterinar, dori, mahsulot qidirish...';
   static const String emergencyHelp = 'Favqulodda yordam';
-  static const String emergencySub = '24/7 · GPS orqali joylashuv';
+  static const String emergencySub = '24/7 · Tezkor yordam ko\'rsatish';
   static const String categories = 'Kategoriyalar';
   static const String promoTag = 'MAXSUS TAKLIF';
   static const String promoTitle = "Birinchi veterinar ko'rik bepul!";

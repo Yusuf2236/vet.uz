@@ -9,12 +9,14 @@ class SectionHeader extends StatelessWidget {
   final String title;
   final String? actionLabel;
   final VoidCallback? onAction;
+  final Color? actionColor;
 
   const SectionHeader({
     super.key,
     required this.title,
     this.actionLabel,
     this.onAction,
+    this.actionColor,
   });
 
   @override
@@ -37,7 +39,7 @@ class SectionHeader extends StatelessWidget {
             child: Text(
               actionLabel!,
               style: AppTextStyles.bodyStrong.copyWith(
-                color: AppColors.primary,
+                color: actionColor ?? AppColors.primary,
               ),
             ),
           ),

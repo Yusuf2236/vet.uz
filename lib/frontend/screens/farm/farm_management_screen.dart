@@ -230,17 +230,10 @@ class _FarmManagementScreenState extends State<FarmManagementScreen> {
           ],
           const SizedBox(height: AppSpacing.xl),
           
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const SectionHeader(title: 'Xodimlar boshqaruvi'),
-              TextButton.icon(
-                onPressed: _showAddEmployeeDialog,
-                icon: const Icon(Icons.add, size: 18),
-                label: const Text("Qo'shish"),
-                style: TextButton.styleFrom(foregroundColor: AppColors.primary),
-              ),
-            ],
+          SectionHeader(
+            title: 'Xodimlar boshqaruvi',
+            actionLabel: "Qo'shish",
+            onAction: _showAddEmployeeDialog,
           ),
           const SizedBox(height: AppSpacing.md),
           

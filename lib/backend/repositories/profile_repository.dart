@@ -16,7 +16,8 @@ class ProfileRepository {
               .from('profiles')
               .select()
               .eq('id', uid)
-              .maybeSingle();
+              .maybeSingle()
+              .timeout(const Duration(seconds: 3));
           if (row != null) return UserProfile.fromJson(row);
         }
       } catch (_) {
@@ -48,7 +49,7 @@ class ProfileRepository {
             'id': uid,
             ...profile.toJson(),
             'is_pro': profile.isPro,
-          });
+          }).timeout(const Duration(seconds: 3));
           return;
         } catch (_) {
           // lokalga tushamiz

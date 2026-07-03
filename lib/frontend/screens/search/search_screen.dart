@@ -212,27 +212,15 @@ class _SearchScreenState extends State<SearchScreen> {
   // ---- Bo'sh holatdagi takliflar ----
   List<Widget> _suggestions() {
     return [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SectionHeader(title: AppStrings.recentSearches),
-          if (_recentSearches.isNotEmpty)
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _recentSearches.clear();
-                });
-              },
-              child: const Text(
-                "Tozalash",
-                style: TextStyle(
-                  color: AppColors.danger,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-        ],
+      SectionHeader(
+        title: AppStrings.recentSearches,
+        actionLabel: _recentSearches.isNotEmpty ? "Tozalash" : null,
+        actionColor: AppColors.danger,
+        onAction: () {
+          setState(() {
+            _recentSearches.clear();
+          });
+        },
       ),
       const SizedBox(height: AppSpacing.md),
       if (_recentSearches.isEmpty)

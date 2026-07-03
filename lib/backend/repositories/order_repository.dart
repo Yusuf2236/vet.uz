@@ -23,7 +23,8 @@ class OrderRepository {
             'item_count': itemCount,
           })
           .select('id')
-          .single();
+          .single()
+          .timeout(const Duration(seconds: 4));
       final orderId = inserted['id'];
       final rows = items.entries
           .map(
@@ -36,7 +37,7 @@ class OrderRepository {
           )
           .toList();
       if (rows.isNotEmpty) {
-        await client.from('order_items').insert(rows);
+        await client.from('order_items').insert(rows).timeout(const Duration(seconds: 4));
       }
       return true;
     } catch (_) {
@@ -54,7 +55,8 @@ class OrderRepository {
               .from('orders')
               .select()
               .eq('user_id', uid)
-              .order('created_at', ascending: false);
+              .order('created_at', ascending: false)
+              .timeout(const Duration(seconds: 3));
           return rows.map(OrderModel.fromJson).toList();
         } catch (_) {
           // demoga tushamiz
@@ -100,7 +102,8 @@ class OrderRepository {
           final rows = await client
               .from('order_items')
               .select()
-              .eq('order_id', orderId);
+              .eq('order_id', orderId)
+              .timeout(const Duration(seconds: 3));
           if (rows.isNotEmpty) return rows.map(OrderItem.fromJson).toList();
         } catch (_) {
           // demoga tushamiz

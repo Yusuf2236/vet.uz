@@ -7,7 +7,7 @@ class ClinicRepository {
   Future<List<Clinic>> fetchClinics() async {
     if (!SupabaseService.isReady) return MockData.clinics;
     try {
-      final rows = await SupabaseService.client.from('clinics').select();
+      final rows = await SupabaseService.client.from('clinics').select().timeout(const Duration(seconds: 3));
       if (rows.isEmpty) return MockData.clinics;
       return rows.map(Clinic.fromJson).toList();
     } catch (_) {

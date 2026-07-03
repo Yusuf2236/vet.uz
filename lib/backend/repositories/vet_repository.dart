@@ -12,7 +12,8 @@ class VetRepository {
       final rows = await SupabaseService.client
           .from('vets')
           .select()
-          .order('rating', ascending: false);
+          .order('rating', ascending: false)
+          .timeout(const Duration(seconds: 3));
       if (rows.isEmpty) return MockData.vets;
       return rows.map(Veterinarian.fromJson).toList();
     } catch (_) {
@@ -30,7 +31,15 @@ class VetRepository {
         return [
           for (var k = 0; k < current.length; k++)
             if (k == i)
-              current[k].copyWith(isAvailable: !current[k].isAvailable)
+              current[k].copyWith(
+                isAvailable: !current[k].isAvailable,
+                latitude: current[k].latitude != null
+                    ? current[k].latitude! + (tick % 2 == 0 ? 0.0004 : -0.0004)
+                    : null,
+                longitude: current[k].longitude != null
+                    ? current[k].longitude! + (tick % 2 == 0 ? -0.0004 : 0.0004)
+                    : null,
+              )
             else
               current[k],
         ];

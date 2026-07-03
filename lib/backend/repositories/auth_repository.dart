@@ -23,7 +23,7 @@ class AuthRepository {
         await SupabaseService.client.auth.signInWithPassword(
           phone: phoneE164,
           password: password,
-        );
+        ).timeout(const Duration(seconds: 5));
       } catch (_) {
         // Supabase xatoligi bo'lsa ham lokal foydalanishga to'sqinlik qilmaymiz
       }
@@ -38,7 +38,7 @@ class AuthRepository {
         await SupabaseService.client.auth.signUp(
           phone: phoneE164,
           password: password,
-        );
+        ).timeout(const Duration(seconds: 5));
       } catch (_) {
         // Supabase xatoligi bo'lsa ham lokal foydalanishga to'sqinlik qilmaymiz
       }
@@ -49,7 +49,7 @@ class AuthRepository {
   Future<void> signOut() async {
     if (AppConfig.useBackendAuth && SupabaseService.isReady) {
       try {
-        await SupabaseService.client.auth.signOut();
+        await SupabaseService.client.auth.signOut().timeout(const Duration(seconds: 5));
       } catch (_) {}
     }
     await PreferencesService.instance.setLoggedIn(false);

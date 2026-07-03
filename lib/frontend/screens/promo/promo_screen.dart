@@ -4,9 +4,8 @@ import '../../core/constants/app_strings.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
-import '../../data/mock_data.dart';
 import '../../widgets/primary_button.dart';
-import '../../widgets/remote_image.dart';
+import '../../widgets/promo_video_player.dart';
 import '../vet/vet_list_screen.dart';
 
 /// Maxsus taklif tafsiloti.
@@ -37,21 +36,19 @@ class PromoScreen extends StatelessWidget {
               bottom: Radius.circular(AppRadius.xl),
             ),
             child: SizedBox(
-              height: 200,
+              height: 220,
               width: double.infinity,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  RemoteImage(
-                    url: MockData.products.isNotEmpty
-                        ? 'https://loremflickr.com/600/400/veterinary,medical?lock=21'
-                        : '',
-                    fallbackBuilder: (_) => Container(color: AppColors.primary),
+                  const PromoVideoPlayer(
+                    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+                    fallbackUrl: 'https://loremflickr.com/600/400/veterinary,medical?lock=21',
                   ),
                   const DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Color(0xE60E3D2C), Color(0x66134E3A)],
+                        colors: [Color(0xE60E3D2C), Color(0x33134E3A)],
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
                       ),
